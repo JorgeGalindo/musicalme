@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useEffect, useState } from "react";
+import { useMemo } from "react";
 import { buildSharedColorMap, NEUTRAL } from "./sharedColors";
 import {
   AreaChart,
@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useFilter } from "./FilterContext";
+import ReviewBadge from "./ReviewBadge";
 
 const YEAR_COLORS = ["#f472b6", "#a78bfa", "#60a5fa", "#2dd4bf", "#34d399", "#fbbf24", "#fb923c", "#818cf8"];
 const TOP_N = 15;
@@ -76,11 +77,6 @@ function SongsComparison({ artist, years, songs }: { artist: string; years: numb
 export default function ArtistDetail() {
   const { filters, filtered, raw } = useFilter();
   const artist = filters.selectedArtist;
-  const [scoreMap, setScoreMap] = useState<Record<string, number> | null>(null);
-
-  useEffect(() => {
-    fetch("/data/artist-scores.json").then((r) => r.json()).then(setScoreMap).catch(() => {});
-  }, []);
 
   const monthlyData = useMemo(() => {
     if (!artist) return [];
@@ -130,7 +126,7 @@ export default function ArtistDetail() {
     <div className="rounded-xl bg-zinc-900 border border-violet-500/30 p-5">
       <div className="flex items-baseline justify-between mb-4">
         <div className="flex items-baseline gap-3">
-          <h2 className="text-lg font-bold text-violet-300">{artist}</h2>
+          <h2 className="text-lg font-bold text-violet-300">{artist}<ReviewBadge artist={artist} /></h2>
           {rank && (
             <span className="text-[11px] text-zinc-600">
               #{rank} de {filtered.topArtists.length}

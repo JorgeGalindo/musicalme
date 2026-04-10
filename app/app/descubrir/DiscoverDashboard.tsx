@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo, useCallback } from "react";
+import ReviewBadge from "../components/ReviewBadge";
 
 type Recommendation = {
   artist: string;
@@ -424,7 +425,7 @@ export default function DiscoverDashboard() {
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-zinc-600 text-[11px] tabular-nums w-5">{i + 1}</span>
                   <DimDots d1={r.d1} d2={r.d2} d3={r.d3} d4={r.d4} />
-                  <span className="text-zinc-100 font-medium">{r.artist}</span>
+                  <span className="text-zinc-100 font-medium">{r.artist}<ReviewBadge artist={r.artist} /></span>
                   {r.country && <span className="text-[10px] text-zinc-600">{r.country}</span>}
                   {r.myPlays > 0 && <span className="text-[10px] text-amber-500/60">{r.myPlays} plays</span>}
                 </div>

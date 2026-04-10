@@ -1,15 +1,22 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useFilter } from "./FilterContext";
+import { useReviewScores } from "./ReviewBadge";
 
 export default function ScoreCard() {
-  const [scoreMap, setScoreMap] = useState<Record<string, number> | null>(null);
+  const scoreMapRich = useReviewScores();
   const { raw, filtered, filters } = useFilter();
 
-  useEffect(() => {
-    fetch("/data/artist-scores.json").then((r) => r.json()).then(setScoreMap).catch(() => {});
-  }, []);
+  // Build simple artist→avg map from rich data for weighted average calculations
+  const scoreMap = useMemo(() => {
+    if (!scoreMapRich) return null;
+    const m: Record<string, number> = {};
+    for (const [artist, entry] of Object.entries(scoreMapRich)) {
+      m[artist] = entry.avg;
+    }
+    return m;
+  }, [scoreMapRich]);
 
   const hasSpecificFilter = !!filters.selectedArtist || !!filters.selectedGenre || !!filters.selectedCountry;
 

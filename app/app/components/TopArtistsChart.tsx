@@ -12,6 +12,7 @@ import {
   LabelList,
 } from "recharts";
 import { useFilter } from "./FilterContext";
+import { useReviewScores } from "./ReviewBadge";
 
 const PALETTE = [
   "#f472b6", "#e879f9", "#c084fc", "#a78bfa", "#818cf8",
@@ -34,11 +35,10 @@ export default function TopArtistsChart() {
   const selected = filters.selectedArtist;
   const [metric, setMetric] = useState<Metric>("hours");
   const [similarMap, setSimilarMap] = useState<Record<string, string[]> | null>(null);
-  const [scoreMap, setScoreMap] = useState<Record<string, number> | null>(null);
+  const scoreMap = useReviewScores();
 
   useEffect(() => {
     fetch("/data/artist-similar.json").then((r) => r.json()).then(setSimilarMap).catch(() => {});
-    fetch("/data/artist-scores.json").then((r) => r.json()).then(setScoreMap).catch(() => {});
   }, []);
 
   const handleBarClick = useCallback(
@@ -322,11 +322,16 @@ export default function TopArtistsChart() {
                 fontSize: 12,
               }}
               formatter={(value, _name, props) => {
-                const p = (props as { payload: { plays: number; hours: number; songs: number } }).payload;
+                const p = (props as { payload: { artist: string; plays: number; hours: number; songs: number } }).payload;
+                const sc = scoreMap?.[p.artist];
+                const parts = metric === "hours"
+                  ? `${value}h · ${p.plays} plays · ${p.songs} songs`
+                  : `${value} plays · ${p.hours}h · ${p.songs} songs`;
+                const scoreParts: string[] = [];
+                if (sc?.p != null) scoreParts.push(`P ${sc.p}`);
+                if (sc?.n != null) scoreParts.push(`N ${sc.n}`);
                 return [
-                  metric === "hours"
-                    ? `${value}h · ${p.plays} plays · ${p.songs} songs`
-                    : `${value} plays · ${p.hours}h · ${p.songs} songs`,
+                  scoreParts.length > 0 ? `${parts} · ${scoreParts.join(" ")}` : parts,
                   "",
                 ];
               }}

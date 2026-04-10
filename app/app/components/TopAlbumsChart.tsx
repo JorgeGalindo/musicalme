@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useFilter } from "./FilterContext";
 import { buildSharedColorMap, NEUTRAL } from "./sharedColors";
+import ReviewBadge from "./ReviewBadge";
 
 type AlbumSession = { a: string; al: string; d: string; m: string; t: number };
 
@@ -196,6 +197,7 @@ export default function TopAlbumsChart() {
             <div className="flex-1 min-w-0">
               <div className="truncate">
                 <span className="text-zinc-200">{a.album}</span>
+                <ReviewBadge artist={a.artist} album={a.album} />
               </div>
               <div className="text-[10px] text-zinc-600 truncate">
                 {a.artist}

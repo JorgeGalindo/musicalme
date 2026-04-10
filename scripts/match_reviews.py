@@ -19,6 +19,26 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
 OUT_PATH = DATA_DIR / "artist-reviews.json"
+SCORES_PATH = ROOT / "app" / "public" / "data" / "artist-scores.json"
+
+
+SOURCE_KEY = {"pitchfork": "p", "nme": "n", "ra": "r", "uncut": "u"}
+
+
+def normalise_album(name: str) -> str:
+    """Normalise album name for cross-source matching."""
+    import html as html_mod
+    s = html_mod.unescape(name)
+    # Strip curly/smart quotes
+    s = s.replace("\u2018", "").replace("\u2019", "")
+    s = s.replace("\u201c", "").replace("\u201d", "")
+    s = s.replace("'", "").replace('"', "")
+    s = s.lower().strip()
+    # Remove trailing " album", " ep", " single" (NME artifacts)
+    for suffix in [" album", " single"]:
+        if s.endswith(suffix):
+            s = s[:-len(suffix)].strip()
+    return s
 
 
 def normalise(name: str) -> str:
@@ -107,6 +127,44 @@ def main():
 
     with open(OUT_PATH, "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
+
+    # --- Generate enriched artist-scores.json for frontend ---
+    scores_map = {}
+    for r in results:
+        if r["avgScore"] is None:
+            continue
+        entry = {"avg": r["avgScore"]}
+
+        # Per-source artist averages
+        by_source = defaultdict(list)
+        for a in r["albums"]:
+            if a.get("score") is not None:
+                by_source[a["source"]].append(a["score"])
+        for src, vals in by_source.items():
+            key = SOURCE_KEY.get(src)
+            if key:
+                entry[key] = round(sum(vals) / len(vals), 1)
+
+        # Per-album scores (normalised album name → {p: x, n: y})
+        album_scores = defaultdict(dict)
+        for a in r["albums"]:
+            if a.get("score") is None or not a.get("album"):
+                continue
+            norm = normalise_album(a["album"])
+            key = SOURCE_KEY.get(a["source"])
+            if key and norm:
+                album_scores[norm][key] = a["score"]
+
+        if album_scores:
+            entry["albums"] = dict(album_scores)
+
+        scores_map[r["artist"]] = entry
+
+    with open(SCORES_PATH, "w", encoding="utf-8") as f:
+        json.dump(scores_map, f, ensure_ascii=False, separators=(",", ":"))
+
+    scores_size = SCORES_PATH.stat().st_size / 1024
+    print(f"\nGenerated {SCORES_PATH.name}: {len(scores_map)} artists, {scores_size:.0f} KB")
 
     print(f"Matched: {matched} / {len(artist_hours)} artists")
     print(f"Hours covered: {total_hours - unmatched_hours:.0f} / {total_hours:.0f} ({(total_hours - unmatched_hours) / total_hours * 100:.1f}%)")

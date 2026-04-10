@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useFilter } from "./FilterContext";
 import { buildSharedColorMap, NEUTRAL } from "./sharedColors";
+import ReviewBadge from "./ReviewBadge";
 
 const YEAR_COLORS = [
   "#f472b6", "#a78bfa", "#60a5fa", "#2dd4bf", "#34d399",
@@ -155,7 +156,7 @@ export default function TopSongsTable() {
                   {s.song}
                 </td>
                 <td className="py-1.5 pr-3 text-zinc-500 truncate max-w-[180px]">
-                  {s.artist}
+                  {s.artist}<ReviewBadge artist={s.artist} />
                 </td>
                 <td className="py-1.5 text-right tabular-nums text-zinc-300">
                   {s.plays}

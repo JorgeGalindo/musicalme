@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import ReviewBadge from "../components/ReviewBadge";
 
 type Song = {
   artist: string;
@@ -53,7 +54,7 @@ export default function ResurfaceSongs({ songs }: { songs: Song[] }) {
                   {s.song}
                 </td>
                 <td className="py-2 pr-3 text-zinc-500 truncate max-w-[160px]">
-                  {s.artist}
+                  {s.artist}<ReviewBadge artist={s.artist} />
                 </td>
                 <td className="py-2 text-right tabular-nums text-zinc-300">
                   {s.totalPlays}

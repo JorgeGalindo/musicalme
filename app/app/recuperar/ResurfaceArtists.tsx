@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import ReviewBadge from "../components/ReviewBadge";
 
 type Artist = {
   artist: string;
@@ -43,7 +44,7 @@ export default function ResurfaceArtists({ artists }: { artists: Artist[] }) {
           >
             <div className="flex items-baseline justify-between mb-1">
               <span className="text-sm font-medium text-zinc-200 truncate">
-                {a.artist}
+                {a.artist}<ReviewBadge artist={a.artist} />
               </span>
               <span className="text-[10px] text-zinc-600 ml-2 flex-shrink-0">
                 {a.totalHours}h
