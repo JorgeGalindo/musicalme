@@ -134,8 +134,9 @@ export default function CountryChart() {
         País de origen
       </h2>
       <p className="text-[11px] text-zinc-600 mb-3">click para filtrar</p>
-      <div className="h-[180px] flex items-center">
-        <ResponsiveContainer width="45%" height="100%">
+      <div className="flex flex-col sm:flex-row items-center gap-3">
+        <div className="w-full sm:w-[45%] h-[150px] sm:h-[180px]">
+        <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie data={data} dataKey="hours" nameKey="name" cx="50%" cy="50%"
               innerRadius={40} outerRadius={65} paddingAngle={2} strokeWidth={0} cursor="pointer"
@@ -153,6 +154,7 @@ export default function CountryChart() {
             />
           </PieChart>
         </ResponsiveContainer>
+        </div>
         <div className="flex flex-col gap-1.5 text-xs">
           {data.map((d, i) => (
             <button key={d.name} onClick={() => setSelectedCountry(d.rawCountry)}

@@ -50,10 +50,10 @@ export default function ResurfaceSongs({ songs }: { songs: Song[] }) {
                 className="border-b border-zinc-800/30 hover:bg-zinc-800/20 transition-colors"
               >
                 <td className="py-2 pr-3 text-zinc-600 tabular-nums">{i + 1}</td>
-                <td className="py-2 pr-3 text-zinc-200 truncate max-w-[220px]">
+                <td className="py-2 pr-3 text-zinc-200 truncate max-w-[100px] sm:max-w-[220px]">
                   {s.song}
                 </td>
-                <td className="py-2 pr-3 text-zinc-500 truncate max-w-[160px]">
+                <td className="py-2 pr-3 text-zinc-500 truncate max-w-[80px] sm:max-w-[160px]">
                   {s.artist}<ReviewBadge artist={s.artist} />
                 </td>
                 <td className="py-2 text-right tabular-nums text-zinc-300">

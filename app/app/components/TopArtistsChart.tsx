@@ -208,9 +208,9 @@ export default function TopArtistsChart() {
     const years = filtered.comparisonYears;
     const maxH = Math.max(...comparisonArtists.flatMap((a) => years.map((y) => a.byYear[y] || 0)));
     const ROW = 28;
-    const PAD_L = 140;
-    const PAD_R = 50;
-    const W = 700;
+    const PAD_L = 110;
+    const PAD_R = 40;
+    const W = 550;
     const H = comparisonArtists.length * ROW + 30;
 
     const x = (h: number) => PAD_L + (h / maxH) * (W - PAD_L - PAD_R);
@@ -309,8 +309,8 @@ export default function TopArtistsChart() {
             <YAxis
               dataKey="artist"
               type="category"
-              tick={{ fill: "#a1a1aa", fontSize: 11 }}
-              width={120}
+              tick={{ fill: "#a1a1aa", fontSize: 10 }}
+              width={100}
               tickLine={false}
               axisLine={false}
             />

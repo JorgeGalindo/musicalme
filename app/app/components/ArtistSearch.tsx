@@ -45,10 +45,10 @@ export default function ArtistSearch() {
           setOpen(true);
         }}
         onFocus={() => query.length >= 2 && setOpen(true)}
-        className="w-48 px-3 py-1.5 text-xs rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600 transition-colors"
+        className="w-full sm:w-48 px-3 py-1.5 text-xs rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600 transition-colors"
       />
       {open && suggestions.length > 0 && (
-        <div className="absolute z-50 top-full mt-1 w-64 rounded-lg bg-zinc-900 border border-zinc-700 shadow-xl overflow-hidden">
+        <div className="absolute z-50 top-full mt-1 w-full sm:w-64 rounded-lg bg-zinc-900 border border-zinc-700 shadow-xl overflow-hidden">
           {suggestions.map((a) => (
             <button
               key={a.artist}

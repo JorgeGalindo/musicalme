@@ -241,7 +241,7 @@ export default function DiscoverDashboard() {
   if (!data) return <div className="flex items-center justify-center min-h-[50vh]"><span className="text-zinc-600 text-sm animate-pulse">cargando...</span></div>;
 
   return (
-    <main className="max-w-6xl mx-auto px-4 pb-10">
+    <main className="max-w-6xl mx-auto px-3 sm:px-4 pb-10">
       <div className="mb-6">
         <p className="text-xs text-zinc-500 max-w-xl">
           Artistas afines a tu gusto. Cinco dimensiones: similitud directa, 2º grado,
@@ -255,24 +255,24 @@ export default function DiscoverDashboard() {
         {/* Presets */}
         <div>
           <span className="text-[11px] text-zinc-500 uppercase tracking-wider block mb-2">Modo</span>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {PRESETS.map((p) => (
               <button
                 key={p.value}
                 onClick={() => { setFilters((f) => ({ ...f, preset: p.value })); setShowAll(false); }}
-                className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
+                className={`px-2.5 py-1.5 text-[11px] sm:text-xs rounded-lg transition-colors ${
                   filters.preset === p.value
                     ? "bg-zinc-100 text-zinc-900"
                     : "text-zinc-500 hover:text-zinc-200 border border-zinc-800"
                 }`}
               >
                 <div>{p.label}</div>
-                <div className="text-[9px] opacity-60">{p.desc}</div>
+                <div className="text-[9px] opacity-60 hidden sm:block">{p.desc}</div>
               </button>
             ))}
           </div>
           {/* Dimension legend */}
-          <div className="flex gap-4 mt-2 text-[10px]">
+          <div className="flex flex-wrap gap-3 sm:gap-4 mt-2 text-[10px]">
             {[
               { color: "#a78bfa", label: "similar" },
               { color: "#60a5fa", label: "2º grado" },
@@ -344,9 +344,9 @@ export default function DiscoverDashboard() {
           <div className="relative">
             <input type="text" value={seedInput} onChange={(e) => setSeedInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && addSeed(seedInput)}
-              placeholder="añadir artista semilla..." className="w-56 px-3 py-1.5 text-xs rounded-lg bg-zinc-950 border border-zinc-800 text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600" />
+              placeholder="añadir artista semilla..." className="w-full sm:w-56 px-3 py-1.5 text-xs rounded-lg bg-zinc-950 border border-zinc-800 text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600" />
             {seedSuggestions.length > 0 && (
-              <div className="absolute z-50 top-full mt-1 w-56 rounded-lg bg-zinc-900 border border-zinc-700 shadow-xl overflow-hidden">
+              <div className="absolute z-50 top-full mt-1 w-full sm:w-56 rounded-lg bg-zinc-900 border border-zinc-700 shadow-xl overflow-hidden">
                 {seedSuggestions.map((a) => (
                   <button key={a} onClick={() => addSeed(a)} className="w-full text-left px-3 py-1.5 text-xs hover:bg-zinc-800 text-zinc-300">{a}</button>
                 ))}
@@ -367,7 +367,7 @@ export default function DiscoverDashboard() {
           </div>
           <input type="text" value={excludeInput} onChange={(e) => setExcludeInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && excludeInput.trim()) { setFilters((p) => ({ ...p, excludeSources: [...p.excludeSources, excludeInput.trim()] })); setExcludeInput(""); } }}
-            placeholder="excluir fuente..." className="w-56 px-3 py-1.5 text-xs rounded-lg bg-zinc-950 border border-zinc-800 text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600" />
+            placeholder="excluir fuente..." className="w-full sm:w-56 px-3 py-1.5 text-xs rounded-lg bg-zinc-950 border border-zinc-800 text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600" />
         </div>
 
         {/* Reset */}
@@ -436,7 +436,7 @@ export default function DiscoverDashboard() {
                   {r.myPlays > 0 && <span className="text-[10px] text-amber-500/60">{r.myPlays} plays</span>}
                 </div>
                 {r.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mb-1.5 ml-7">
+                  <div className="flex flex-wrap gap-1 mb-1.5 ml-2 sm:ml-7">
                     {r.tags.slice(0, 4).map((t) => (
                       <button key={t} onClick={() => toggleTag(t)}
                         className={`px-1.5 py-0.5 text-[10px] rounded transition-colors ${filters.tags.includes(t) ? "bg-violet-500/20 text-violet-300" : "bg-zinc-800 text-zinc-400 hover:text-zinc-200"}`}
@@ -445,7 +445,7 @@ export default function DiscoverDashboard() {
                   </div>
                 )}
                 {r.because.length > 0 && (
-                  <div className="text-[11px] text-zinc-500 ml-7">
+                  <div className="text-[11px] text-zinc-500 ml-2 sm:ml-7">
                     porque escuchas{" "}
                     {r.because.map((b, j) => (
                       <span key={b}>
@@ -456,7 +456,7 @@ export default function DiscoverDashboard() {
                   </div>
                 )}
                 {r.topAlbums && r.topAlbums.length > 0 && (
-                  <div className="flex gap-2 mt-1.5 ml-7">
+                  <div className="flex gap-2 mt-1.5 ml-2 sm:ml-7">
                     {r.topAlbums.map((al) => (
                       <span key={al.al} className="text-[10px] text-zinc-500 bg-zinc-800/50 rounded px-1.5 py-0.5">
                         {al.al} <span className="text-amber-500/70 font-medium">{al.sc}</span>

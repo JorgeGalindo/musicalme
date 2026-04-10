@@ -81,7 +81,7 @@ export default function GenreChart() {
   if (filtered.isComparing && comparisonData && comparisonData.length > 0) {
     const years = filtered.comparisonYears;
     const maxH = Math.max(...comparisonData.flatMap((g) => years.map((y) => g.byYear[y] || 0)));
-    const ROW = 26; const PAD_L = 130; const PAD_R = 50; const W = 700;
+    const ROW = 26; const PAD_L = 100; const PAD_R = 40; const W = 550;
     const H = comparisonData.length * ROW + 30;
     const x = (h: number) => PAD_L + (h / maxH) * (W - PAD_L - PAD_R);
 
@@ -179,7 +179,7 @@ export default function GenreChart() {
       <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-400 mb-1">Géneros</h2>
       <p className="text-[11px] text-zinc-600 mb-4">tamaño = horas · click para filtrar</p>
       <div className="overflow-x-auto">
-        <svg viewBox={`${minX} ${minY} ${W} ${totalH}`} className="w-full" style={{ maxWidth: 600 }}>
+        <svg viewBox={`${minX} ${minY} ${W} ${totalH}`} className="w-full">
           {bubbles.map((b) => {
             const color = PALETTE[b.idx % PALETTE.length];
             const isSelected = selected === b.name;

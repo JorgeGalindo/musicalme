@@ -218,10 +218,10 @@ export default function LoopsChart() {
             <span className="text-zinc-300 truncate flex-1">
               {l.s}
             </span>
-            <span className="text-zinc-600 truncate max-w-[120px] flex-shrink-0">
+            <span className="text-zinc-600 truncate max-w-[80px] sm:max-w-[120px] flex-shrink-0">
               {l.a}
             </span>
-            <span className="text-zinc-700 tabular-nums flex-shrink-0 text-[10px]">
+            <span className="text-zinc-700 tabular-nums flex-shrink-0 text-[10px] hidden sm:inline">
               {l.d}
             </span>
           </div>

@@ -152,10 +152,10 @@ export default function TopSongsTable() {
                 className="border-b border-zinc-800/30 hover:bg-zinc-800/20 transition-colors"
               >
                 <td className="py-1.5 pr-3 text-zinc-600 tabular-nums">{i + 1}</td>
-                <td className="py-1.5 pr-3 text-zinc-200 truncate max-w-[250px]">
+                <td className="py-1.5 pr-3 text-zinc-200 truncate max-w-[120px] sm:max-w-[250px]">
                   {s.song}
                 </td>
-                <td className="py-1.5 pr-3 text-zinc-500 truncate max-w-[180px]">
+                <td className="py-1.5 pr-3 text-zinc-500 truncate max-w-[100px] sm:max-w-[180px]">
                   {s.artist}<ReviewBadge artist={s.artist} />
                 </td>
                 <td className="py-1.5 text-right tabular-nums text-zinc-300">

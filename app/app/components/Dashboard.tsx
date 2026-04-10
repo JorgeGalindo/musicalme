@@ -41,14 +41,11 @@ function DashboardInner({ raw }: { raw: RawData }) {
   const hasArtist = !!filters.selectedArtist;
 
   return (
-    <main className="max-w-6xl mx-auto px-4 pb-10">
-      {/* Search bar — pulled up next to nav */}
-      <div className="-mt-12 mb-4 flex justify-end">
+    <main className="max-w-6xl mx-auto px-3 sm:px-4 pb-10">
+      {/* Filters bar */}
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-6">
         <ArtistSearch />
-      </div>
-
-      {/* Year selector */}
-      <div className="mb-6">
+        <div className="basis-full sm:basis-auto" />
         <TimeSelector />
       </div>
 

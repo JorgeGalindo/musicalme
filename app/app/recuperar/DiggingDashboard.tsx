@@ -197,7 +197,7 @@ export default function DiggingDashboard() {
   }
 
   return (
-    <main className="max-w-6xl mx-auto px-4 pb-10">
+    <main className="max-w-6xl mx-auto px-3 sm:px-4 pb-10">
       {/* Intro */}
       <div className="mb-6">
         <p className="text-xs text-zinc-500 max-w-xl">

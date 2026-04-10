@@ -46,8 +46,9 @@ export default function SourceChart() {
       <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-400 mb-4">
         Dispositivo
       </h2>
-      <div className="h-[180px] flex items-center">
-        <ResponsiveContainer width="45%" height="100%">
+      <div className="flex flex-col sm:flex-row items-center gap-3">
+        <div className="w-full sm:w-[45%] h-[150px] sm:h-[180px]">
+        <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               data={data}
@@ -76,6 +77,7 @@ export default function SourceChart() {
             />
           </PieChart>
         </ResponsiveContainer>
+        </div>
         <div className="flex flex-col gap-2 text-xs">
           {data.map((d, i) => (
             <div key={d.name} className="flex items-center gap-2">
