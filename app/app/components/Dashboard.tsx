@@ -41,7 +41,7 @@ function DashboardInner({ raw }: { raw: RawData }) {
   const hasArtist = !!filters.selectedArtist;
 
   return (
-    <main className="max-w-6xl mx-auto px-3 sm:px-4 pb-10">
+    <main className="max-w-6xl mx-auto px-3 sm:px-4 pb-10 overflow-x-hidden">
       {/* Filters bar */}
       <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-6">
         <TimeSelector />
