@@ -3,17 +3,21 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import ReviewBadge from "../components/ReviewBadge";
 
+type TopAlbum = { al: string; sc: number; src: string };
+
 type Recommendation = {
   artist: string;
   d1: number; // direct similarity
   d2: number; // 2nd degree
   d3: number; // influence
   d4: number; // genre affinity
+  d5: number; // review score
   because: string[];
   tags: string[];
   listeners: number;
   country: string | null;
   myPlays: number;
+  topAlbums: TopAlbum[];
 };
 
 type TagMode = "OR" | "AND";
@@ -26,13 +30,14 @@ const FAMILIARITY_OPTIONS: { value: FamiliarityLevel; label: string; maxPlays: n
   { value: 2, label: "5–20 veces", maxPlays: 20 },
 ];
 
-// Presets: different weightings of the 4 dimensions
-type Preset = "mix" | "similar" | "explorar" | "sorprender";
-const PRESETS: { value: Preset; label: string; desc: string; w: [number, number, number, number] }[] = [
-  { value: "mix", label: "mix", desc: "equilibrio de todo", w: [1, 1, 1, 1] },
-  { value: "similar", label: "familiar", desc: "más parecido a lo que escuchas", w: [3, 1, 0.3, 1] },
-  { value: "explorar", label: "explorar", desc: "2º grado + afinidad de género", w: [0.5, 3, 1, 2] },
-  { value: "sorprender", label: "sorprender", desc: "influencias + fuera de burbuja", w: [0.3, 1, 3, 0.5] },
+// Presets: different weightings of the 5 dimensions
+type Preset = "mix" | "similar" | "explorar" | "sorprender" | "critica";
+const PRESETS: { value: Preset; label: string; desc: string; w: [number, number, number, number, number] }[] = [
+  { value: "mix", label: "mix", desc: "equilibrio de todo", w: [1, 1, 1, 1, 1] },
+  { value: "similar", label: "familiar", desc: "más parecido a lo que escuchas", w: [3, 1, 0.3, 1, 0.5] },
+  { value: "explorar", label: "explorar", desc: "2º grado + afinidad de género", w: [0.5, 3, 1, 2, 1] },
+  { value: "sorprender", label: "sorprender", desc: "influencias + fuera de burbuja", w: [0.3, 1, 3, 0.5, 0.5] },
+  { value: "critica", label: "critica", desc: "los mejor valorados en reviews", w: [0.5, 0.5, 0.5, 0.5, 4] },
 ];
 
 type Filters = {
@@ -59,20 +64,20 @@ const DEFAULT_FILTERS: Filters = {
   familiarity: 2,
 };
 
-// 2×2 dot grid showing dimensional strength
-function DimDots({ d1, d2, d3, d4 }: { d1: number; d2: number; d3: number; d4: number }) {
+// 5-dot row showing dimensional strength
+function DimDots({ d1, d2, d3, d4, d5 }: { d1: number; d2: number; d3: number; d4: number; d5: number }) {
   const dims = [
     { v: d1, color: "#a78bfa", label: "similar" },
     { v: d2, color: "#60a5fa", label: "2º grado" },
     { v: d3, color: "#f472b6", label: "influencia" },
     { v: d4, color: "#34d399", label: "género" },
+    { v: d5, color: "#fbbf24", label: "reviews" },
   ];
-  // Diameter: 3px min, 10px max, proportional to value
-  const maxV = Math.max(d1, d2, d3, d4, 0.01);
+  const maxV = Math.max(d1, d2, d3, d4, d5, 0.01);
   return (
     <div
-      className="grid grid-cols-2 gap-[3px] w-7 h-7 flex-shrink-0 place-items-center"
-      title={`sim=${d1.toFixed(2)} 2nd=${d2.toFixed(2)} inf=${d3.toFixed(2)} gen=${d4.toFixed(2)}`}
+      className="flex gap-[3px] items-center flex-shrink-0"
+      title={`sim=${d1.toFixed(2)} 2nd=${d2.toFixed(2)} inf=${d3.toFixed(2)} gen=${d4.toFixed(2)} rev=${d5.toFixed(2)}`}
     >
       {dims.map((d) => {
         const size = 3 + (d.v / maxV) * 7;
@@ -150,7 +155,7 @@ export default function DiscoverDashboard() {
 
     let result = data.map((r) => ({
       ...r,
-      score: r.d1 * weights[0] + r.d2 * weights[1] + r.d3 * weights[2] + r.d4 * weights[3],
+      score: r.d1 * weights[0] + r.d2 * weights[1] + r.d3 * weights[2] + r.d4 * weights[3] + (r.d5 || 0) * weights[4],
     }));
 
     // Hide "no" feedback (persistent)
@@ -239,8 +244,8 @@ export default function DiscoverDashboard() {
     <main className="max-w-6xl mx-auto px-4 pb-10">
       <div className="mb-6">
         <p className="text-xs text-zinc-500 max-w-xl">
-          Artistas afines a tu gusto. Cuatro dimensiones: similitud directa, 2º grado,
-          influencias musicales, y afinidad de género.
+          Artistas afines a tu gusto. Cinco dimensiones: similitud directa, 2º grado,
+          influencias musicales, afinidad de género, y valoración en reviews.
         </p>
       </div>
 
@@ -273,6 +278,7 @@ export default function DiscoverDashboard() {
               { color: "#60a5fa", label: "2º grado" },
               { color: "#f472b6", label: "influencia" },
               { color: "#34d399", label: "género" },
+              { color: "#fbbf24", label: "reviews" },
             ].map((d) => (
               <span key={d.label} className="flex items-center gap-1">
                 <span className="w-2 h-2 rounded-full" style={{ background: d.color }} />
@@ -424,7 +430,7 @@ export default function DiscoverDashboard() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-zinc-600 text-[11px] tabular-nums w-5">{i + 1}</span>
-                  <DimDots d1={r.d1} d2={r.d2} d3={r.d3} d4={r.d4} />
+                  <DimDots d1={r.d1} d2={r.d2} d3={r.d3} d4={r.d4} d5={r.d5 || 0} />
                   <span className="text-zinc-100 font-medium">{r.artist}<ReviewBadge artist={r.artist} /></span>
                   {r.country && <span className="text-[10px] text-zinc-600">{r.country}</span>}
                   {r.myPlays > 0 && <span className="text-[10px] text-amber-500/60">{r.myPlays} plays</span>}
@@ -445,6 +451,15 @@ export default function DiscoverDashboard() {
                       <span key={b}>
                         {j > 0 && (j === r.because.length - 1 ? " y " : ", ")}
                         <button onClick={() => addSeed(b)} className="text-violet-400/70 hover:text-violet-300 transition-colors">{b}</button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {r.topAlbums && r.topAlbums.length > 0 && (
+                  <div className="flex gap-2 mt-1.5 ml-7">
+                    {r.topAlbums.map((al) => (
+                      <span key={al.al} className="text-[10px] text-zinc-500 bg-zinc-800/50 rounded px-1.5 py-0.5">
+                        {al.al} <span className="text-amber-500/70 font-medium">{al.sc}</span>
                       </span>
                     ))}
                   </div>

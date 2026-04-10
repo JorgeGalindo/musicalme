@@ -320,6 +320,7 @@ export default function TopArtistsChart() {
                 border: "1px solid #3f3f46",
                 borderRadius: 8,
                 fontSize: 12,
+                color: "#a1a1aa",
               }}
               formatter={(value, _name, props) => {
                 const p = (props as { payload: { artist: string; plays: number; hours: number; songs: number } }).payload;

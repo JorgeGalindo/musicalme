@@ -72,6 +72,7 @@ export default function WeekdayChart() {
     border: "1px solid #3f3f46",
     borderRadius: 8,
     fontSize: 12,
+    color: "#a1a1aa",
   };
 
   // --- Comparison: lines ---

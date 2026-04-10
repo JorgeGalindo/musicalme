@@ -101,7 +101,7 @@ export default function CountryChart() {
                         ))}
                       </Pie>
                       <Tooltip
-                        contentStyle={{ background: "#18181b", border: "1px solid #3f3f46", borderRadius: 8, fontSize: 11 }}
+                        contentStyle={{ background: "#18181b", border: "1px solid #3f3f46", borderRadius: 8, fontSize: 11, color: "#a1a1aa" }}
                         formatter={(value) => [`${value}h`, ""]}
                       />
                     </PieChart>
@@ -148,7 +148,7 @@ export default function CountryChart() {
               ))}
             </Pie>
             <Tooltip
-              contentStyle={{ background: "#18181b", border: "1px solid #3f3f46", borderRadius: 8, fontSize: 12 }}
+              contentStyle={{ background: "#18181b", border: "1px solid #3f3f46", borderRadius: 8, fontSize: 12, color: "#a1a1aa" }}
               formatter={(value) => [`${value}h`, ""]}
             />
           </PieChart>

@@ -163,6 +163,7 @@ export default function ArtistDetail() {
                 border: "1px solid #3f3f46",
                 borderRadius: 8,
                 fontSize: 11,
+                color: "#a1a1aa",
               }}
               formatter={(value) => [`${value}h`, ""]}
               labelFormatter={(label) => `20${label}`}

@@ -110,7 +110,7 @@ export default function DecadeChart() {
               <XAxis dataKey="decade" tick={{ fill: "#71717a", fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: "#52525b", fontSize: 10 }} width={40} axisLine={false} tickLine={false} />
               <Tooltip
-                contentStyle={{ background: "#18181b", border: "1px solid #3f3f46", borderRadius: 8, fontSize: 12 }}
+                contentStyle={{ background: "#18181b", border: "1px solid #3f3f46", borderRadius: 8, fontSize: 12, color: "#a1a1aa" }}
                 formatter={(value) => [`${value}h`, ""]}
               />
               <Legend wrapperStyle={{ fontSize: 11 }} />
@@ -140,7 +140,7 @@ export default function DecadeChart() {
             <XAxis dataKey="decade" tick={{ fill: "#71717a", fontSize: 11 }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fill: "#52525b", fontSize: 10 }} width={40} axisLine={false} tickLine={false} />
             <Tooltip
-              contentStyle={{ background: "#18181b", border: "1px solid #3f3f46", borderRadius: 8, fontSize: 12 }}
+              contentStyle={{ background: "#18181b", border: "1px solid #3f3f46", borderRadius: 8, fontSize: 12, color: "#a1a1aa" }}
               formatter={(value, _name, props) => {
                 const p = (props as { payload: { count: number } }).payload;
                 return [`${value}h · ${p.count} artistas`, ""];

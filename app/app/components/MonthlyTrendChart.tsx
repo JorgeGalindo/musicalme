@@ -193,6 +193,7 @@ export default function MonthlyTrendChart() {
                 borderRadius: 8,
                 fontFamily: "var(--font-mono)",
                 fontSize: 12,
+                color: "#a1a1aa",
               }}
               formatter={(value) => [`${value}h`, ""]}
               labelFormatter={(label) => `20${label}`}
