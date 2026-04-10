@@ -42,11 +42,14 @@ function DashboardInner({ raw }: { raw: RawData }) {
 
   return (
     <main className="max-w-6xl mx-auto px-4 pb-10">
-      {/* Filters bar */}
-      <div className="flex flex-wrap items-center gap-3 mb-6">
-        <TimeSelector />
-        <div className="h-5 w-px bg-zinc-800" />
+      {/* Search bar — pulled up next to nav */}
+      <div className="-mt-12 mb-4 flex justify-end">
         <ArtistSearch />
+      </div>
+
+      {/* Year selector */}
+      <div className="mb-6">
+        <TimeSelector />
       </div>
 
       {/* Active filters */}

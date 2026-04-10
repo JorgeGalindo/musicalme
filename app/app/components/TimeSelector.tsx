@@ -10,10 +10,10 @@ export default function TimeSelector() {
     filters.timeRange.type === "years" ? filters.timeRange.years : [];
 
   return (
-    <div className="flex flex-wrap gap-2 items-center">
+    <div className="flex flex-wrap gap-1.5 items-center">
       <button
         onClick={() => setTimeRange({ type: "all" })}
-        className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
+        className={`px-2 py-1 text-[11px] rounded-md transition-colors ${
           isAll
             ? "bg-zinc-100 text-zinc-900"
             : "bg-zinc-900 text-zinc-400 hover:text-zinc-200 border border-zinc-800"
@@ -27,7 +27,7 @@ export default function TimeSelector() {
           <button
             key={y}
             onClick={() => toggleYear(y)}
-            className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
+            className={`px-2 py-1 text-[11px] rounded-md transition-colors ${
               active
                 ? "bg-zinc-100 text-zinc-900"
                 : "bg-zinc-900 text-zinc-400 hover:text-zinc-200 border border-zinc-800"
