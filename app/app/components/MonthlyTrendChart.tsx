@@ -176,7 +176,8 @@ export default function MonthlyTrendChart() {
               dataKey="label"
               tick={{ fill: "#52525b", fontSize: 10, fontFamily: "var(--font-mono)" }}
               tickFormatter={(v: string) => v.endsWith("-01") ? `'${v.slice(0, 2)}` : ""}
-              interval={0}
+              interval="preserveStartEnd"
+              minTickGap={30}
               axisLine={{ stroke: "#27272a" }}
               tickLine={false}
             />
