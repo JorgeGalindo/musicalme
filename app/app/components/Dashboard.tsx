@@ -44,9 +44,9 @@ function DashboardInner({ raw }: { raw: RawData }) {
     <main className="max-w-6xl mx-auto px-3 sm:px-4 pb-10">
       {/* Filters bar */}
       <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-6">
-        <ArtistSearch />
-        <div className="basis-full sm:basis-auto" />
         <TimeSelector />
+        <div className="h-5 w-px bg-zinc-800 hidden sm:block" />
+        <ArtistSearch />
       </div>
 
       {/* Active filters */}
