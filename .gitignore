@@ -1,0 +1,22 @@
+# Data (too large for git)
+data/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node / Next.js
+node_modules/
+app/.next/
+app/out/
+
+# Secrets
+.env
+
+# OS
+.DS_Store
+
+# Processed data (regenerable — but needed for deployment)
+# app/public/data/
