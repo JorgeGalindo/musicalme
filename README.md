@@ -10,41 +10,45 @@ Interactive dashboard visualising consumption patterns across 226k plays.
 
 - Big-picture stats: total hours, plays, unique artists/songs
 - Monthly timeline with 6-month moving average (clickable to filter month)
+- **Month range slider** with from/to selection (replaces year buttons)
+- **Period comparison**: "vs" button adds a second range slider to compare any two time periods across all charts
 - Top artists ranking (by hours or plays, clickable to deep-dive)
 - Artist detail panel: mini-timeline with MA, top songs, similar artists (Last.fm), rank position
+- **Inline review scores** (Pitchfork/NME) next to every artist and album name
 - Top songs table filtered by time range
 - Top albums by "deep listening" score (sessions of 3+ unique tracks from same album, ring gauge)
-- Genre breakdown (packed bubbles, clickable to filter)
+- Genre breakdown (packed bubbles, clickable to filter) — MusicBrainz + Discogs styles
 - Review score heatmap: nota media por año, or per-artist score when filtered
-- Loops: songs played multiple times in a day (dynamic min-play filter buttons, 3x to max)
+- Loops: songs played 3+ times in a listening day (6am–6am window, dynamic filter buttons)
 - Hourly patterns (gradient colours dawn→night, local time of wherever user was)
 - Country of origin (clickable donut)
 - Decade of origin histogram
 - Weekday patterns
-- Year multi-select with comparison mode across all charts: overlaid lines, dot-range plots, parallel columns with colour-coded shared items
 - Artist search with autocomplete
-- All filters compose and cascade: year(s) + artist + genre + country + month
+- All filters compose and cascade: range + artist + genre + country + month
 
 ### Recuperar (`/recuperar`)
 
-Resurface forgotten music. Dual month-range slider from 2008 to present. Shows artists with significant listening in the selected period but near-zero recent activity, plus their top songs from that era.
+Resurface forgotten music. Dual month-range slider from 2008 to present. Shows **forgotten songs first** (sorted by most recent last-played, top 100), then forgotten artists with significant listening in the selected period but near-zero recent activity, plus their top songs from that era.
 
 ### Descubrir (`/descubrir`)
 
-Multi-dimensional recommendation engine. Four affinity dimensions:
+Multi-dimensional recommendation engine. Five affinity dimensions:
 
 1. **Similitud directa** (d1) — Last.fm similar artists, weighted by how much you listen to the source artist
 2. **2º grado** (d2) — Similar artists of your similar artists (dampened signal)
 3. **Influencias** (d3) — Wikidata influence chains: artists who influenced what you love, or were influenced by it
 4. **Afinidad de género** (d4) — Genre profile overlap between the candidate and your listening habits
+5. **Valoración en reviews** (d5) — Pitchfork/NME/RA review scores (normalised 0–1)
 
-Four preset modes that reweight the dimensions:
-- **mix**: balanced across all four
+Five preset modes that reweight the dimensions:
+- **mix**: balanced across all five
 - **familiar**: heavy on direct similarity
 - **explorar**: heavy on 2nd degree + genre affinity
 - **sorprender**: heavy on influence chains
+- **critica**: heavy on review scores — the best-reviewed artists
 
-Filterable by: genre tags (AND/OR), seed artists (AND/OR), excluded sources, excluded recommendations, familiarity level (never / 1–4 plays / 5–20 plays), minimum affinity score. Each result shows a mini dimensional breakdown bar.
+Each recommendation shows its **top-rated albums** with scores. Filterable by: genre tags (AND/OR), seed artists (AND/OR), excluded sources, excluded recommendations, familiarity level (never / 1–4 plays / 5–20 plays), minimum affinity score. Each result shows a mini dimensional breakdown bar.
 
 ## Architecture
 
@@ -102,7 +106,7 @@ musicalme/
 │       ├── source-month.json          # artist × source × month → hours, plays
 │       ├── hourly-month.json          # hour × month → plays, minutes
 │       ├── artist-similar.json         # Last.fm similar artists (lightweight)
-│       ├── artist-scores.json         # Review scores per artist (lightweight)
+│       ├── artist-scores.json         # Review scores per artist+album (by source: P/N/R)
 │       ├── resurface.json             # Precomputed forgotten artists/songs
 │       └── discover.json              # Multi-dimensional recommendation scores
 ├── .env                               # API keys (gitignored)
@@ -154,6 +158,10 @@ cd app && npm install && npm run dev
 ```
 
 Open http://localhost:3000
+
+### Deployment
+
+Connected to Vercel — every push to `main` auto-deploys.
 
 ## Data sources
 
