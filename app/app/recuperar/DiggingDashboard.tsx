@@ -67,6 +67,7 @@ export default function DiggingDashboard() {
   // Slider state: default to full data range
   const [fromIdx, setFromIdx] = useState<number | null>(null);
   const [toIdx, setToIdx] = useState<number | null>(null);
+  const [minPlays, setMinPlays] = useState(8);
 
   // Initialize slider to data range on load
   useEffect(() => {
@@ -169,7 +170,7 @@ export default function DiggingDashboard() {
         }
       }
 
-      if (rangePlays >= 8 && recentPlays === 0) {
+      if (rangePlays >= minPlays && recentPlays === 0) {
         songRes.push({
           artist: s.a,
           song: s.s,
@@ -186,7 +187,7 @@ export default function DiggingDashboard() {
       artists: artistResults.slice(0, 50),
       songResults: songRes.slice(0, 100),
     };
-  }, [artistMonth, songs, allMonths, dataMonths, fromIdx, toIdx]);
+  }, [artistMonth, songs, allMonths, dataMonths, fromIdx, toIdx, minPlays]);
 
   if (!artistMonth || !songs || fromIdx === null || toIdx === null) {
     return (
@@ -223,9 +224,21 @@ export default function DiggingDashboard() {
 
       {songResults.length > 0 && (
         <section className="mb-10">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-400 mb-5">
-            Canciones olvidadas
-          </h2>
+          <div className="flex items-center gap-3 mb-5">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-400">
+              Canciones olvidadas
+            </h2>
+            <label className="flex items-center gap-1.5 text-[11px] text-zinc-500">
+              min plays
+              <input
+                type="number"
+                min={1}
+                value={minPlays}
+                onChange={(e) => setMinPlays(Math.max(1, Number(e.target.value) || 1))}
+                className="w-14 bg-zinc-900 border border-zinc-700 rounded px-1.5 py-0.5 text-zinc-300 text-[11px] text-center focus:outline-none focus:border-zinc-500"
+              />
+            </label>
+          </div>
           <ResurfaceSongs songs={songResults} />
         </section>
       )}
