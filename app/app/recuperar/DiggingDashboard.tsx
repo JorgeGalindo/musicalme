@@ -180,7 +180,7 @@ export default function DiggingDashboard() {
       }
     }
 
-    songRes.sort((a, b) => b.lastPlayed.localeCompare(a.lastPlayed));
+    songRes.sort((a, b) => a.lastPlayed.localeCompare(b.lastPlayed));
 
     return {
       artists: artistResults.slice(0, 50),
