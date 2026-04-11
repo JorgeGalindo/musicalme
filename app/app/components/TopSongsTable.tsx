@@ -20,19 +20,18 @@ export default function TopSongsTable() {
   const comparisonData = useMemo(() => {
     if (!filtered.isComparing) return null;
 
-    const years = filtered.comparisonYears;
+    const periods = filtered.comparisonPeriods;
     const artistFilter = filters.selectedArtist;
 
-    // Compute top songs per year
-    const perYear = years.map((year) => {
-      const prefix = String(year);
+    // Compute top songs per period
+    const perPeriod = periods.map((period) => {
       const songPlays = new Map<string, { artist: string; song: string; plays: number }>();
 
       for (const s of raw.songs) {
         if (artistFilter && s.a !== artistFilter) continue;
         let plays = 0;
         for (const [m, [p]] of Object.entries(s.pm)) {
-          if (m.startsWith(prefix)) plays += p;
+          if (period.months.has(m)) plays += p;
         }
         if (plays > 0) {
           const key = `${s.a}||${s.s}`;
@@ -41,23 +40,23 @@ export default function TopSongsTable() {
       }
 
       return {
-        year,
+        label: period.label,
         songs: [...songPlays.values()].sort((a, b) => b.plays - a.plays).slice(0, TOP_N),
       };
     });
 
-    // Find songs that appear in multiple years
-    const songYearCount = new Map<string, number>();
-    for (const yData of perYear) {
-      for (const s of yData.songs) {
+    // Find songs that appear in multiple periods
+    const songPeriodCount = new Map<string, number>();
+    for (const pData of perPeriod) {
+      for (const s of pData.songs) {
         const key = `${s.artist}||${s.song}`;
-        songYearCount.set(key, (songYearCount.get(key) || 0) + 1);
+        songPeriodCount.set(key, (songPeriodCount.get(key) || 0) + 1);
       }
     }
-    const shared = new Set([...songYearCount.entries()].filter(([, c]) => c >= 2).map(([k]) => k));
+    const shared = new Set([...songPeriodCount.entries()].filter(([, c]) => c >= 2).map(([k]) => k));
 
-    return { perYear, shared };
-  }, [raw.songs, filtered.isComparing, filtered.comparisonYears]);
+    return { perPeriod, shared };
+  }, [raw.songs, filtered.isComparing, filtered.comparisonPeriods]);
 
   // --- Normal mode ---
   const songs = useMemo(() => {
@@ -66,7 +65,7 @@ export default function TopSongsTable() {
 
   // --- Render comparison ---
   if (filtered.isComparing && comparisonData) {
-    const { perYear, shared } = comparisonData;
+    const { perPeriod, shared } = comparisonData;
     const sharedColors = buildSharedColorMap(shared);
 
     return (
@@ -75,19 +74,19 @@ export default function TopSongsTable() {
           Top canciones — comparación
         </h2>
         <p className="text-[11px] text-zinc-600 mb-4">
-          top {TOP_N} por plays · canciones en ambos años destacadas
+          top {TOP_N} por plays · canciones en ambos períodos destacadas
         </p>
         <div className="flex gap-4 overflow-x-auto">
-          {perYear.map((yData, yi) => (
-            <div key={yData.year} className="flex-1 min-w-[220px]">
+          {perPeriod.map((pData, yi) => (
+            <div key={pData.label} className="flex-1 min-w-[220px]">
               <div
                 className="text-xs font-bold mb-3 pb-2 border-b"
                 style={{ color: YEAR_COLORS[yi], borderColor: `${YEAR_COLORS[yi]}33` }}
               >
-                {yData.year}
+                {pData.label}
               </div>
               <div className="space-y-1">
-                {yData.songs.map((s, i) => {
+                {pData.songs.map((s, i) => {
                   const key = `${s.artist}||${s.song}`;
                   const colors = sharedColors.get(key) || NEUTRAL;
                   const isShared = shared.has(key);

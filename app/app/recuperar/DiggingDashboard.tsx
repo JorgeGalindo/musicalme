@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import MonthRangeSlider from "./MonthRangeSlider";
+import MonthRangeSlider from "../components/MonthRangeSlider";
 import ResurfaceArtists from "./ResurfaceArtists";
 import ResurfaceSongs from "./ResurfaceSongs";
 

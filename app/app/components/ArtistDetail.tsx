@@ -18,41 +18,40 @@ const TOP_N = 15;
 
 type SongRow = { a: string; s: string; pm: Record<string, [number, number]> };
 
-function SongsComparison({ artist, years, songs }: { artist: string; years: number[]; songs: SongRow[] }) {
+function SongsComparison({ artist, periods, songs }: { artist: string; periods: { label: string; months: Set<string> }[]; songs: SongRow[] }) {
   const artistSongs = songs.filter((s) => s.a === artist);
 
-  const perYear = years.map((year) => {
-    const prefix = String(year);
+  const perPeriod = periods.map((period) => {
     const songPlays = new Map<string, { song: string; plays: number }>();
     for (const s of artistSongs) {
       let plays = 0;
       for (const [m, [p]] of Object.entries(s.pm)) {
-        if (m.startsWith(prefix)) plays += p;
+        if (period.months.has(m)) plays += p;
       }
       if (plays > 0) songPlays.set(s.s, { song: s.s, plays });
     }
     return {
-      year,
+      label: period.label,
       songs: [...songPlays.values()].sort((a, b) => b.plays - a.plays).slice(0, TOP_N),
     };
   });
 
-  const songYears = new Map<string, number>();
-  for (const y of perYear) for (const s of y.songs) songYears.set(s.song, (songYears.get(s.song) || 0) + 1);
-  const shared = new Set([...songYears.entries()].filter(([, c]) => c >= 2).map(([k]) => k));
+  const songPeriods = new Map<string, number>();
+  for (const p of perPeriod) for (const s of p.songs) songPeriods.set(s.song, (songPeriods.get(s.song) || 0) + 1);
+  const shared = new Set([...songPeriods.entries()].filter(([, c]) => c >= 2).map(([k]) => k));
   const sharedColors = buildSharedColorMap(shared);
 
   return (
     <div>
       <h3 className="text-[11px] text-zinc-600 uppercase tracking-wider mb-3">Top canciones — comparación</h3>
       <div className="flex gap-4 overflow-x-auto">
-        {perYear.map((yData, yi) => (
-          <div key={yData.year} className="flex-1 min-w-[180px]">
-            <div className="text-xs font-bold mb-2 pb-1 border-b" style={{ color: YEAR_COLORS[yi], borderColor: `${YEAR_COLORS[yi]}33` }}>
-              {yData.year}
+        {perPeriod.map((pData, pi) => (
+          <div key={pData.label} className="flex-1 min-w-[180px]">
+            <div className="text-xs font-bold mb-2 pb-1 border-b" style={{ color: YEAR_COLORS[pi], borderColor: `${YEAR_COLORS[pi]}33` }}>
+              {pData.label}
             </div>
             <div className="space-y-1">
-              {yData.songs.map((s, i) => {
+              {pData.songs.map((s, i) => {
                 const colors = sharedColors.get(s.song) || NEUTRAL;
                 const isShared = shared.has(s.song);
                 return (
@@ -192,7 +191,7 @@ export default function ArtistDetail() {
 
       {/* Songs: comparison columns or flat list */}
       {filtered.isComparing && artist ? (
-        <SongsComparison artist={artist} years={filtered.comparisonYears} songs={raw.songs} />
+        <SongsComparison artist={artist} periods={filtered.comparisonPeriods} songs={raw.songs} />
       ) : topSongs.length > 0 ? (
         <div>
           <h3 className="text-[11px] text-zinc-600 uppercase tracking-wider mb-2">

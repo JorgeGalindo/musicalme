@@ -37,27 +37,26 @@ export default function GenreChart() {
   const comparisonData = useMemo(() => {
     if (!filtered.isComparing) return null;
 
-    const years = filtered.comparisonYears;
-    const yearArtistHours = years.map((year) => {
-      const prefix = String(year);
+    const periods = filtered.comparisonPeriods;
+    const periodArtistHours = periods.map((period) => {
       const map = new Map<string, number>();
       for (const r of raw.artistMonth) {
-        if (!r.m.startsWith(prefix)) continue;
+        if (!period.months.has(r.m)) continue;
         map.set(r.a, (map.get(r.a) || 0) + r.h);
       }
       return map;
     });
-    const yearGenres = yearArtistHours.map((ahm) => computeGenreHours(ahm));
+    const periodGenres = periodArtistHours.map((ahm) => computeGenreHours(ahm));
 
     const allGenres = new Map<string, number>();
-    for (const yg of yearGenres) for (const [g, v] of yg) allGenres.set(g, (allGenres.get(g) || 0) + v.hours);
+    for (const pg of periodGenres) for (const [g, v] of pg) allGenres.set(g, (allGenres.get(g) || 0) + v.hours);
     const topGenres = [...allGenres.entries()].sort((a, b) => b[1] - a[1]).slice(0, 15).map(([g]) => g);
 
     return topGenres.map((genre) => ({
       genre,
-      byYear: Object.fromEntries(years.map((y, i) => [y, Math.round((yearGenres[i].get(genre)?.hours || 0) * 10) / 10])),
+      byPeriod: Object.fromEntries(periods.map((p, i) => [p.label, Math.round((periodGenres[i].get(genre)?.hours || 0) * 10) / 10])),
     }));
-  }, [raw.artistMonth, raw.artistMeta, filtered.isComparing, filtered.comparisonYears]);
+  }, [raw.artistMonth, raw.artistMeta, filtered.isComparing, filtered.comparisonPeriods]);
 
   // --- Normal: bubble data ---
   const data = useMemo(() => {
@@ -79,8 +78,8 @@ export default function GenreChart() {
 
   // --- Render comparison: dot-range ---
   if (filtered.isComparing && comparisonData && comparisonData.length > 0) {
-    const years = filtered.comparisonYears;
-    const maxH = Math.max(...comparisonData.flatMap((g) => years.map((y) => g.byYear[y] || 0)));
+    const periods = filtered.comparisonPeriods;
+    const maxH = Math.max(...comparisonData.flatMap((g) => periods.map((p) => g.byPeriod[p.label] || 0)));
     const ROW = 26; const PAD_L = 100; const PAD_R = 40; const W = 550;
     const H = comparisonData.length * ROW + 30;
     const x = (h: number) => PAD_L + (h / maxH) * (W - PAD_L - PAD_R);
@@ -89,10 +88,10 @@ export default function GenreChart() {
       <div className="rounded-xl bg-zinc-900 border border-zinc-800/60 p-5">
         <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-400 mb-1">Géneros — comparación</h2>
         <div className="flex gap-3 mb-4 mt-2">
-          {years.map((y, i) => (
-            <span key={y} className="flex items-center gap-1.5 text-[11px]">
+          {periods.map((p, i) => (
+            <span key={p.label} className="flex items-center gap-1.5 text-[11px]">
               <span className="w-2.5 h-2.5 rounded-full" style={{ background: YEAR_COLORS[i] }} />
-              <span className="text-zinc-400">{y}</span>
+              <span className="text-zinc-400">{p.label}</span>
             </span>
           ))}
         </div>
@@ -100,15 +99,15 @@ export default function GenreChart() {
           <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ maxWidth: W }}>
             {comparisonData.map((g, ri) => {
               const cy = ri * ROW + 16;
-              const vals = years.map((y) => g.byYear[y] || 0);
+              const vals = periods.map((p) => g.byPeriod[p.label] || 0);
               const minV = Math.min(...vals); const maxV = Math.max(...vals);
               return (
                 <g key={g.genre}>
                   <text x={PAD_L - 8} y={cy + 4} textAnchor="end" className="text-[11px] fill-zinc-400">{g.genre}</text>
                   <line x1={x(minV)} x2={x(maxV)} y1={cy} y2={cy} stroke="#3f3f46" strokeWidth={2} />
-                  {years.map((y, yi) => {
-                    const v = g.byYear[y] || 0;
-                    return (<g key={y}><circle cx={x(v)} cy={cy} r={5} fill={YEAR_COLORS[yi]} /><text x={x(v)} y={cy - 9} textAnchor="middle" className="text-[9px] fill-zinc-500">{v}</text></g>);
+                  {periods.map((p, pi) => {
+                    const v = g.byPeriod[p.label] || 0;
+                    return (<g key={p.label}><circle cx={x(v)} cy={cy} r={5} fill={YEAR_COLORS[pi]} /><text x={x(v)} y={cy - 9} textAnchor="middle" className="text-[9px] fill-zinc-500">{v}</text></g>);
                   })}
                 </g>
               );

@@ -63,33 +63,32 @@ export default function HourlyChart() {
   const comparisonData = useMemo(() => {
     if (!filtered.isComparing || !hourlyData) return null;
 
-    const years = filtered.comparisonYears;
+    const periods = filtered.comparisonPeriods;
 
-    // Per year: average plays per hour (divide by number of months in that year)
-    const yearHourly = years.map((year) => {
-      const prefix = String(year);
+    // Per period: average plays per hour (divide by number of months in that period)
+    const periodHourly = periods.map((period) => {
       const hourPlays = new Map<number, number>();
       const months = new Set<string>();
 
       for (const r of hourlyData) {
-        if (!r.m.startsWith(prefix)) continue;
+        if (!period.months.has(r.m)) continue;
         months.add(r.m);
         hourPlays.set(r.hr, (hourPlays.get(r.hr) || 0) + r.min);
       }
 
       const nMonths = Math.max(months.size, 1);
-      return { year, hourPlays, nMonths };
+      return { label: period.label, hourPlays, nMonths };
     });
 
     return HOUR_ORDER.map((h) => {
       const row: Record<string, string | number> = { hour: formatHour(h) };
-      for (const yd of yearHourly) {
+      for (const pd of periodHourly) {
         // Average minutes per month for this hour
-        row[String(yd.year)] = Math.round(((yd.hourPlays.get(h) || 0) / yd.nMonths) * 10) / 10;
+        row[pd.label] = Math.round(((pd.hourPlays.get(h) || 0) / pd.nMonths) * 10) / 10;
       }
       return row;
     });
-  }, [hourlyData, filtered.isComparing, filtered.comparisonYears]);
+  }, [hourlyData, filtered.isComparing, filtered.comparisonPeriods]);
 
   // --- Normal mode: average across all filtered months ---
   const data = useMemo(() => {
@@ -124,7 +123,7 @@ export default function HourlyChart() {
 
   // --- Render comparison ---
   if (filtered.isComparing && comparisonData) {
-    const years = filtered.comparisonYears;
+    const periods = filtered.comparisonPeriods;
     return (
       <div className="rounded-xl bg-zinc-900 border border-zinc-800/60 p-5">
         <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-400 mb-1">
@@ -139,8 +138,8 @@ export default function HourlyChart() {
               <YAxis tick={{ fill: "#52525b", fontSize: 10 }} width={35} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={tooltipStyle} formatter={(value) => [`${value} min/mes`, ""]} />
               <Legend wrapperStyle={{ fontSize: 11 }} />
-              {years.map((y, i) => (
-                <Line key={y} type="monotone" dataKey={String(y)} stroke={YEAR_COLORS[i]} strokeWidth={2}
+              {periods.map((period, i) => (
+                <Line key={period.label} type="monotone" dataKey={period.label} stroke={YEAR_COLORS[i]} strokeWidth={2}
                   dot={{ r: 3, fill: YEAR_COLORS[i] }} activeDot={{ r: 5 }} />
               ))}
             </LineChart>

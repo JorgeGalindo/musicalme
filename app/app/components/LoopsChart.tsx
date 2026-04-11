@@ -51,15 +51,14 @@ export default function LoopsChart() {
   const comparisonData = useMemo(() => {
     if (!filtered.isComparing || !allLoops) return null;
 
-    const years = filtered.comparisonYears;
+    const periods = filtered.comparisonPeriods;
 
-    const perYear = years.map((year) => {
-      const prefix = String(year);
-      // Aggregate: same song across multiple loop days in that year → total loop plays
+    const perPeriod = periods.map((period) => {
+      // Aggregate: same song across multiple loop days in that period → total loop plays
       const songLoops = new Map<string, { artist: string; song: string; totalPlays: number; maxDay: number }>();
 
       for (const l of allLoops) {
-        if (!l.m.startsWith(prefix)) continue;
+        if (!period.months.has(l.m)) continue;
         if (filters.selectedArtist && l.a !== filters.selectedArtist) continue;
         const key = `${l.a}||${l.s}`;
         const prev = songLoops.get(key) || { artist: l.a, song: l.s, totalPlays: 0, maxDay: 0 };
@@ -69,23 +68,23 @@ export default function LoopsChart() {
       }
 
       return {
-        year,
+        label: period.label,
         songs: [...songLoops.values()].sort((a, b) => b.totalPlays - a.totalPlays).slice(0, TOP_N),
       };
     });
 
     // Shared songs
-    const songYears = new Map<string, number>();
-    for (const yData of perYear) {
-      for (const s of yData.songs) {
+    const songPeriods = new Map<string, number>();
+    for (const pData of perPeriod) {
+      for (const s of pData.songs) {
         const key = `${s.artist}||${s.song}`;
-        songYears.set(key, (songYears.get(key) || 0) + 1);
+        songPeriods.set(key, (songPeriods.get(key) || 0) + 1);
       }
     }
-    const shared = new Set([...songYears.entries()].filter(([, c]) => c >= 2).map(([k]) => k));
+    const shared = new Set([...songPeriods.entries()].filter(([, c]) => c >= 2).map(([k]) => k));
 
-    return { perYear, shared };
-  }, [allLoops, filtered.isComparing, filtered.comparisonYears, filters.selectedArtist]);
+    return { perPeriod, shared };
+  }, [allLoops, filtered.isComparing, filtered.comparisonPeriods, filters.selectedArtist]);
 
   const [showAll, setShowAll] = useState(false);
   const visible = showAll ? loops.slice(0, 100) : loops.slice(0, 20);
@@ -94,7 +93,7 @@ export default function LoopsChart() {
 
   // --- Render comparison ---
   if (filtered.isComparing && comparisonData) {
-    const { perYear, shared } = comparisonData;
+    const { perPeriod, shared } = comparisonData;
     const sharedColors = buildSharedColorMap(shared);
 
     return (
@@ -106,16 +105,16 @@ export default function LoopsChart() {
           top {TOP_N} canciones más loopeadas · en común destacadas
         </p>
         <div className="flex gap-4 overflow-x-auto">
-          {perYear.map((yData, yi) => (
-            <div key={yData.year} className="flex-1 min-w-[220px]">
+          {perPeriod.map((pData, yi) => (
+            <div key={pData.label} className="flex-1 min-w-[220px]">
               <div
                 className="text-xs font-bold mb-3 pb-2 border-b"
                 style={{ color: YEAR_COLORS[yi], borderColor: `${YEAR_COLORS[yi]}33` }}
               >
-                {yData.year}
+                {pData.label}
               </div>
               <div className="space-y-1">
-                {yData.songs.map((s, i) => {
+                {pData.songs.map((s, i) => {
                   const key = `${s.artist}||${s.song}`;
                   const colors = sharedColors.get(key) || NEUTRAL;
                   const isShared = shared.has(key);

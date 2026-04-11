@@ -29,18 +29,17 @@ const YEAR_COLORS = [
 export default function DecadeChart() {
   const { raw, filtered, filters } = useFilter();
 
-  // --- Comparison: lines per year ---
+  // --- Comparison: lines per period ---
   const comparisonData = useMemo(() => {
     if (!filtered.isComparing) return null;
 
-    const years = filtered.comparisonYears;
+    const periods = filtered.comparisonPeriods;
 
-    // Per year: compute decade hours
-    const yearDecades = years.map((year) => {
-      const prefix = String(year);
+    // Per period: compute decade hours
+    const periodDecades = periods.map((period) => {
       const artistHours = new Map<string, number>();
       for (const r of raw.artistMonth) {
-        if (!r.m.startsWith(prefix)) continue;
+        if (!period.months.has(r.m)) continue;
         artistHours.set(r.a, (artistHours.get(r.a) || 0) + r.h);
       }
 
@@ -57,19 +56,19 @@ export default function DecadeChart() {
 
     // Union of all decades
     const allDecades = new Set<string>();
-    for (const yd of yearDecades) {
-      for (const d of yd.keys()) allDecades.add(d);
+    for (const pd of periodDecades) {
+      for (const d of pd.keys()) allDecades.add(d);
     }
     const decades = [...allDecades].sort();
 
     return decades.map((decade) => {
       const row: Record<string, string | number> = { decade };
-      years.forEach((y, i) => {
-        row[String(y)] = Math.round((yearDecades[i].get(decade) || 0) * 10) / 10;
+      periods.forEach((p, i) => {
+        row[p.label] = Math.round((periodDecades[i].get(decade) || 0) * 10) / 10;
       });
       return row;
     });
-  }, [raw.artistMonth, raw.artistMeta, filtered.isComparing, filtered.comparisonYears]);
+  }, [raw.artistMonth, raw.artistMeta, filtered.isComparing, filtered.comparisonPeriods]);
 
   // --- Normal mode ---
   const data = useMemo(() => {
@@ -97,7 +96,7 @@ export default function DecadeChart() {
 
   // --- Render comparison: lines ---
   if (filtered.isComparing && comparisonData && comparisonData.length > 0) {
-    const years = filtered.comparisonYears;
+    const periods = filtered.comparisonPeriods;
     return (
       <div className="rounded-xl bg-zinc-900 border border-zinc-800/60 p-5">
         <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-400 mb-4">
@@ -114,8 +113,8 @@ export default function DecadeChart() {
                 formatter={(value) => [`${value}h`, ""]}
               />
               <Legend wrapperStyle={{ fontSize: 11 }} />
-              {years.map((y, i) => (
-                <Line key={y} type="monotone" dataKey={String(y)} stroke={YEAR_COLORS[i]} strokeWidth={2}
+              {periods.map((p, i) => (
+                <Line key={p.label} type="monotone" dataKey={p.label} stroke={YEAR_COLORS[i]} strokeWidth={2}
                   dot={{ r: 4, fill: YEAR_COLORS[i] }} activeDot={{ r: 6 }} />
               ))}
             </LineChart>

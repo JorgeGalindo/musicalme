@@ -57,11 +57,10 @@ export default function TopAlbumsChart() {
   const comparisonData = useMemo(() => {
     if (!filtered.isComparing || !allSessions) return null;
 
-    const years = filtered.comparisonYears;
+    const periods = filtered.comparisonPeriods;
 
-    const perYear = years.map((year) => {
-      const prefix = String(year);
-      let sessions = allSessions.filter((s) => s.m.startsWith(prefix));
+    const perPeriod = periods.map((period) => {
+      let sessions = allSessions.filter((s) => period.months.has(s.m));
       if (filters.selectedArtist) {
         sessions = sessions.filter((s) => s.a === filters.selectedArtist);
       }
@@ -75,23 +74,23 @@ export default function TopAlbumsChart() {
       }
 
       return {
-        year,
+        label: period.label,
         albums: [...albumMap.values()].sort((a, b) => b.score - a.score).slice(0, TOP_N),
       };
     });
 
     // Shared albums
-    const albumYears = new Map<string, number>();
-    for (const yData of perYear) {
-      for (const a of yData.albums) {
+    const albumPeriods = new Map<string, number>();
+    for (const pData of perPeriod) {
+      for (const a of pData.albums) {
         const key = `${a.artist}||${a.album}`;
-        albumYears.set(key, (albumYears.get(key) || 0) + 1);
+        albumPeriods.set(key, (albumPeriods.get(key) || 0) + 1);
       }
     }
-    const shared = new Set([...albumYears.entries()].filter(([, c]) => c >= 2).map(([k]) => k));
+    const shared = new Set([...albumPeriods.entries()].filter(([, c]) => c >= 2).map(([k]) => k));
 
-    return { perYear, shared };
-  }, [allSessions, filtered.isComparing, filtered.comparisonYears, filters.selectedArtist]);
+    return { perPeriod, shared };
+  }, [allSessions, filtered.isComparing, filtered.comparisonPeriods, filters.selectedArtist]);
 
   const [showAll, setShowAll] = useState(false);
 
@@ -99,7 +98,7 @@ export default function TopAlbumsChart() {
 
   // --- Render comparison ---
   if (filtered.isComparing && comparisonData) {
-    const { perYear, shared } = comparisonData;
+    const { perPeriod, shared } = comparisonData;
     const sharedColors = buildSharedColorMap(shared);
 
     return (
@@ -111,16 +110,16 @@ export default function TopAlbumsChart() {
           top {TOP_N} por escucha profunda · en común destacados
         </p>
         <div className="flex gap-4 overflow-x-auto">
-          {perYear.map((yData, yi) => (
-            <div key={yData.year} className="flex-1 min-w-[220px]">
+          {perPeriod.map((pData, yi) => (
+            <div key={pData.label} className="flex-1 min-w-[220px]">
               <div
                 className="text-xs font-bold mb-3 pb-2 border-b"
                 style={{ color: YEAR_COLORS[yi], borderColor: `${YEAR_COLORS[yi]}33` }}
               >
-                {yData.year}
+                {pData.label}
               </div>
               <div className="space-y-1">
-                {yData.albums.map((a, i) => {
+                {pData.albums.map((a, i) => {
                   const key = `${a.artist}||${a.album}`;
                   const colors = sharedColors.get(key) || NEUTRAL;
                   const isShared = shared.has(key);

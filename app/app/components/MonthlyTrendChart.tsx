@@ -20,40 +20,39 @@ const YEAR_COLORS = [
   "#fbbf24", "#fb923c", "#818cf8",
 ];
 
-const MONTH_LABELS = [
-  "Ene", "Feb", "Mar", "Abr", "May", "Jun",
-  "Jul", "Ago", "Sep", "Oct", "Nov", "Dic",
-];
-
 export default function MonthlyTrendChart() {
   const { raw, filtered, setTimeRange } = useFilter();
 
-  // --- Comparison mode: one line per year, Jan-Dec x-axis ---
+  // --- Comparison mode: one line per period, indexed x-axis ---
   const comparisonData = useMemo(() => {
     if (!filtered.isComparing) return null;
 
-    const years = filtered.comparisonYears;
-    // Build: [{month: 1, label: "Ene", 2022: 15.3, 2023: 20.1}, ...]
-    const byYearMonth = new Map<string, number>();
-    for (const r of raw.artistMonth) {
-      const year = parseInt(r.m.slice(0, 4));
-      if (!years.includes(year)) continue;
-      const key = `${year}-${r.m.slice(5)}`;
-      byYearMonth.set(key, (byYearMonth.get(key) || 0) + r.h);
-    }
+    const periods = filtered.comparisonPeriods;
 
-    return Array.from({ length: 12 }, (_, i) => {
-      const mm = String(i + 1).padStart(2, "0");
-      const point: Record<string, string | number> = {
-        month: i + 1,
-        label: MONTH_LABELS[i],
-      };
-      for (const y of years) {
-        point[String(y)] = Math.round((byYearMonth.get(`${y}-${mm}`) || 0) * 10) / 10;
+    // For each period, sum hours per month, then sort chronologically and index
+    const periodSeries = periods.map((period) => {
+      const byMonth = new Map<string, number>();
+      for (const r of raw.artistMonth) {
+        if (!period.months.has(r.m)) continue;
+        byMonth.set(r.m, (byMonth.get(r.m) || 0) + r.h);
       }
+      return [...byMonth.entries()]
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([, h]) => Math.round(h * 10) / 10);
+    });
+
+    const maxLen = Math.max(...periodSeries.map((s) => s.length));
+    return Array.from({ length: maxLen }, (_, i) => {
+      const point: Record<string, string | number> = {
+        index: i + 1,
+        label: `Mes ${i + 1}`,
+      };
+      periods.forEach((p, pi) => {
+        point[p.label] = periodSeries[pi][i] ?? 0;
+      });
       return point;
     });
-  }, [raw.artistMonth, filtered.isComparing, filtered.comparisonYears]);
+  }, [raw.artistMonth, filtered.isComparing, filtered.comparisonPeriods]);
 
   // --- Normal mode: full timeline ---
   const timelineData = useMemo(() => {
@@ -98,7 +97,7 @@ export default function MonthlyTrendChart() {
 
   // --- Render comparison ---
   if (filtered.isComparing && comparisonData) {
-    const years = filtered.comparisonYears;
+    const periods = filtered.comparisonPeriods;
     return (
       <div className="rounded-xl bg-zinc-900 border border-zinc-800/60 p-5">
         <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-400 mb-4">
@@ -133,11 +132,11 @@ export default function MonthlyTrendChart() {
               <Legend
                 wrapperStyle={{ fontFamily: "var(--font-mono)", fontSize: 11 }}
               />
-              {years.map((y, i) => (
+              {periods.map((p, i) => (
                 <Line
-                  key={y}
+                  key={p.label}
                   type="monotone"
-                  dataKey={String(y)}
+                  dataKey={p.label}
                   stroke={YEAR_COLORS[i % YEAR_COLORS.length]}
                   strokeWidth={2}
                   dot={{ r: 3, fill: YEAR_COLORS[i % YEAR_COLORS.length] }}

@@ -89,25 +89,26 @@ export default function TopArtistsChart() {
   const comparisonArtists = useMemo(() => {
     if (!filtered.isComparing) return null;
 
-    const years = filtered.comparisonYears;
+    const periods = filtered.comparisonPeriods;
     const artistHours = new Map<string, Map<number, number>>();
     for (const r of raw.artistMonth) {
-      const year = parseInt(r.m.slice(0, 4));
-      if (!years.includes(year)) continue;
-      if (!artistHours.has(r.a)) artistHours.set(r.a, new Map());
-      const ym = artistHours.get(r.a)!;
-      ym.set(year, (ym.get(year) || 0) + r.h);
+      for (let pi = 0; pi < periods.length; pi++) {
+        if (!periods[pi].months.has(r.m)) continue;
+        if (!artistHours.has(r.a)) artistHours.set(r.a, new Map());
+        const pm = artistHours.get(r.a)!;
+        pm.set(pi, (pm.get(pi) || 0) + r.h);
+      }
     }
 
     return [...artistHours.entries()]
-      .map(([artist, ym]) => ({
+      .map(([artist, pm]) => ({
         artist,
-        total: [...ym.values()].reduce((a, b) => a + b, 0),
-        byYear: Object.fromEntries([...ym.entries()].map(([y, h]) => [y, Math.round(h * 10) / 10])),
+        total: [...pm.values()].reduce((a, b) => a + b, 0),
+        byPeriod: Object.fromEntries([...pm.entries()].map(([pi, h]) => [pi, Math.round(h * 10) / 10])),
       }))
       .sort((a, b) => b.total - a.total)
       .slice(0, 20);
-  }, [raw.artistMonth, filtered.isComparing, filtered.comparisonYears]);
+  }, [raw.artistMonth, filtered.isComparing, filtered.comparisonPeriods]);
 
   // --- Normal: top 25 sorted by chosen metric ---
   const top25 = useMemo(() => {
@@ -205,8 +206,8 @@ export default function TopArtistsChart() {
 
   // --- Render: comparison dot-range ---
   if (filtered.isComparing && comparisonArtists) {
-    const years = filtered.comparisonYears;
-    const maxH = Math.max(...comparisonArtists.flatMap((a) => years.map((y) => a.byYear[y] || 0)));
+    const periods = filtered.comparisonPeriods;
+    const maxH = Math.max(...comparisonArtists.flatMap((a) => periods.map((_, pi) => a.byPeriod[pi] || 0)));
     const ROW = 28;
     const PAD_L = 110;
     const PAD_R = 40;
@@ -220,11 +221,11 @@ export default function TopArtistsChart() {
         <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-400 mb-1">
           Top artistas — comparación
         </h2>
-        <div className="flex gap-3 mb-4 mt-2">
-          {years.map((y, i) => (
-            <span key={y} className="flex items-center gap-1.5 text-[11px]">
+        <div className="flex flex-wrap gap-3 mb-4 mt-2">
+          {periods.map((p, i) => (
+            <span key={p.label} className="flex items-center gap-1.5 text-[11px]">
               <span className="w-2.5 h-2.5 rounded-full" style={{ background: YEAR_COLORS[i] }} />
-              <span className="text-zinc-400">{y}</span>
+              <span className="text-zinc-400">{p.label}</span>
             </span>
           ))}
         </div>
@@ -232,7 +233,7 @@ export default function TopArtistsChart() {
           <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ maxWidth: W }}>
             {comparisonArtists.map((a, ri) => {
               const cy = ri * ROW + 16;
-              const vals = years.map((y) => a.byYear[y] || 0);
+              const vals = periods.map((_, pi) => a.byPeriod[pi] || 0);
               const minV = Math.min(...vals);
               const maxV = Math.max(...vals);
               return (
@@ -241,11 +242,11 @@ export default function TopArtistsChart() {
                     {a.artist}
                   </text>
                   <line x1={x(minV)} x2={x(maxV)} y1={cy} y2={cy} stroke="#3f3f46" strokeWidth={2} />
-                  {years.map((y, yi) => {
-                    const v = a.byYear[y] || 0;
+                  {periods.map((_, pi) => {
+                    const v = a.byPeriod[pi] || 0;
                     return (
-                      <g key={y}>
-                        <circle cx={x(v)} cy={cy} r={5} fill={YEAR_COLORS[yi]} />
+                      <g key={pi}>
+                        <circle cx={x(v)} cy={cy} r={5} fill={YEAR_COLORS[pi]} />
                         <text x={x(v)} y={cy - 9} textAnchor="middle" className="text-[9px] fill-zinc-500">
                           {v}
                         </text>

@@ -35,21 +35,23 @@ export default function WeekdayChart() {
   const comparisonData = useMemo(() => {
     if (!filtered.isComparing) return null;
 
-    const years = filtered.comparisonYears;
+    const periods = filtered.comparisonPeriods;
     const map = new Map<string, Map<number, number>>();
     for (const r of filtered.weekdayMonth) {
-      const year = parseInt(r.m.slice(0, 4));
-      if (!years.includes(year)) continue;
-      if (!map.has(r.w)) map.set(r.w, new Map());
-      const ym = map.get(r.w)!;
-      ym.set(year, (ym.get(year) || 0) + r.h);
+      for (let pi = 0; pi < periods.length; pi++) {
+        if (periods[pi].months.has(r.m)) {
+          if (!map.has(r.w)) map.set(r.w, new Map());
+          const wm = map.get(r.w)!;
+          wm.set(pi, (wm.get(pi) || 0) + r.h);
+        }
+      }
     }
 
     return DAY_ORDER.map((d) => {
       const row: Record<string, string | number> = { day: DAY_SHORT[d] };
-      const ym = map.get(d);
-      for (const y of years) {
-        row[String(y)] = Math.round((ym?.get(y) || 0) * 10) / 10;
+      const wm = map.get(d);
+      for (let pi = 0; pi < periods.length; pi++) {
+        row[periods[pi].label] = Math.round((wm?.get(pi) || 0) * 10) / 10;
       }
       return row;
     });
@@ -77,7 +79,7 @@ export default function WeekdayChart() {
 
   // --- Comparison: lines ---
   if (filtered.isComparing && comparisonData) {
-    const years = filtered.comparisonYears;
+    const periods = filtered.comparisonPeriods;
     return (
       <div className="rounded-xl bg-zinc-900 border border-zinc-800/60 p-5">
         <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-400 mb-4">
@@ -104,11 +106,11 @@ export default function WeekdayChart() {
                 formatter={(value) => [`${value}h`, ""]}
               />
               <Legend wrapperStyle={{ fontSize: 11 }} />
-              {years.map((y, i) => (
+              {periods.map((period, i) => (
                 <Line
-                  key={y}
+                  key={period.label}
                   type="monotone"
-                  dataKey={String(y)}
+                  dataKey={period.label}
                   stroke={YEAR_COLORS[i % YEAR_COLORS.length]}
                   strokeWidth={2}
                   dot={{ r: 4, fill: YEAR_COLORS[i % YEAR_COLORS.length] }}

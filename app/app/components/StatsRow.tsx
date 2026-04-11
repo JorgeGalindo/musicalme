@@ -11,25 +11,24 @@ export default function StatsRow() {
   const yearStats = useMemo(() => {
     if (!filtered.isComparing) return null;
 
-    return filtered.comparisonYears.map((year) => {
-      const prefix = String(year);
-      const am = raw.artistMonth.filter((r) => r.m.startsWith(prefix));
+    return filtered.comparisonPeriods.map((period) => {
+      const am = raw.artistMonth.filter((r) => period.months.has(r.m));
       const hours = Math.round(am.reduce((s, r) => s + r.h, 0) * 10) / 10;
       const plays = am.reduce((s, r) => s + r.p, 0);
       const artists = new Set(am.map((r) => r.a)).size;
-      return { year, hours, plays, artists };
+      return { label: period.label, hours, plays, artists };
     });
-  }, [raw.artistMonth, filtered.isComparing, filtered.comparisonYears]);
+  }, [raw.artistMonth, filtered.isComparing, filtered.comparisonPeriods]);
 
   if (yearStats) {
     return (
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {yearStats.map((ys) => (
+        {yearStats.map((ps) => (
           <StatCard
-            key={ys.year}
-            label={String(ys.year)}
-            value={`${ys.hours.toLocaleString("es-ES")}h`}
-            sub={`${ys.plays.toLocaleString("es-ES")} plays · ${ys.artists} artistas`}
+            key={ps.label}
+            label={ps.label}
+            value={`${ps.hours.toLocaleString("es-ES")}h`}
+            sub={`${ps.plays.toLocaleString("es-ES")} plays · ${ps.artists} artistas`}
           />
         ))}
       </div>

@@ -1,26 +1,39 @@
 "use client";
 
-import { useCallback, useRef, useEffect, useState } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
 
 type Props = {
-  months: string[]; // all available months sorted
-  from: number;     // index into months[]
-  to: number;       // index into months[]
+  months: string[];
+  from: number;
+  to: number;
   onChange: (from: number, to: number) => void;
+  compact?: boolean;
 };
 
-function formatMonth(m: string): string {
+const MONTH_NAMES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+
+export function formatMonth(m: string): string {
   const [y, mm] = m.split("-");
-  const names = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
-  return `${names[parseInt(mm) - 1]} ${y}`;
+  return `${MONTH_NAMES[parseInt(mm) - 1]} ${y}`;
 }
 
-export default function MonthRangeSlider({ months, from, to, onChange }: Props) {
+export default function MonthRangeSlider({ months, from, to, onChange, compact }: Props) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [dragging, setDragging] = useState<"from" | "to" | null>(null);
 
-  const max = months.length - 1;
+  // Local state for smooth dragging — only commit to parent on pointerUp
+  const [localFrom, setLocalFrom] = useState(from);
+  const [localTo, setLocalTo] = useState(to);
 
+  // Sync props → local when not dragging
+  useEffect(() => {
+    if (!dragging) {
+      setLocalFrom(from);
+      setLocalTo(to);
+    }
+  }, [from, to, dragging]);
+
+  const max = months.length - 1;
   const pct = (idx: number) => (idx / max) * 100;
 
   const idxFromX = useCallback(
@@ -44,17 +57,20 @@ export default function MonthRangeSlider({ months, from, to, onChange }: Props) 
       if (!dragging) return;
       const idx = idxFromX(e.clientX);
       if (dragging === "from") {
-        onChange(Math.min(idx, to - 1), to);
+        setLocalFrom(Math.min(idx, localTo - 1));
       } else {
-        onChange(from, Math.max(idx, from + 1));
+        setLocalTo(Math.max(idx, localFrom + 1));
       }
     },
-    [dragging, from, to, onChange, idxFromX]
+    [dragging, localFrom, localTo, idxFromX]
   );
 
   const handlePointerUp = useCallback(() => {
+    if (dragging) {
+      onChange(localFrom, localTo);
+    }
     setDragging(null);
-  }, []);
+  }, [dragging, localFrom, localTo, onChange]);
 
   // Year tick marks
   const yearTicks: { idx: number; label: string }[] = [];
@@ -64,16 +80,19 @@ export default function MonthRangeSlider({ months, from, to, onChange }: Props) 
     }
   }
 
+  const showFrom = months[localFrom] || months[0];
+  const showTo = months[localTo] || months[months.length - 1];
+
   return (
     <div className="select-none">
-      <div className="flex justify-between text-xs text-zinc-300 mb-3">
-        <span>{formatMonth(months[from])}</span>
+      <div className={`flex justify-between ${compact ? "text-[10px]" : "text-xs"} text-zinc-300 mb-2`}>
+        <span>{formatMonth(showFrom)}</span>
         <span className="text-zinc-600">→</span>
-        <span>{formatMonth(months[to])}</span>
+        <span>{formatMonth(showTo)}</span>
       </div>
       <div
         ref={trackRef}
-        className="relative h-8 cursor-pointer"
+        className="relative h-8 cursor-pointer touch-none"
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
       >
@@ -84,8 +103,8 @@ export default function MonthRangeSlider({ months, from, to, onChange }: Props) 
         <div
           className="absolute top-3 h-1.5 rounded bg-violet-500/60"
           style={{
-            left: `${pct(from)}%`,
-            width: `${pct(to) - pct(from)}%`,
+            left: `${pct(localFrom)}%`,
+            width: `${pct(localTo) - pct(localFrom)}%`,
           }}
         />
 
@@ -110,7 +129,7 @@ export default function MonthRangeSlider({ months, from, to, onChange }: Props) 
               ? "bg-violet-400 border-violet-300 scale-125"
               : "bg-zinc-900 border-violet-400 hover:border-violet-300"
           } transition-transform`}
-          style={{ left: `${pct(from)}%` }}
+          style={{ left: `${pct(localFrom)}%` }}
           onPointerDown={handlePointerDown("from")}
         />
 
@@ -121,7 +140,7 @@ export default function MonthRangeSlider({ months, from, to, onChange }: Props) 
               ? "bg-violet-400 border-violet-300 scale-125"
               : "bg-zinc-900 border-violet-400 hover:border-violet-300"
           } transition-transform`}
-          style={{ left: `${pct(to)}%` }}
+          style={{ left: `${pct(localTo)}%` }}
           onPointerDown={handlePointerDown("to")}
         />
       </div>

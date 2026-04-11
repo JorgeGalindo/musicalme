@@ -47,20 +47,19 @@ export default function CountryChart() {
       .slice(0, 8);
   };
 
-  // --- Comparison: one donut per year ---
+  // --- Comparison: one donut per period ---
   const comparisonData = useMemo(() => {
     if (!filtered.isComparing) return null;
 
-    return filtered.comparisonYears.map((year) => {
-      const prefix = String(year);
+    return filtered.comparisonPeriods.map((period) => {
       const map = new Map<string, number>();
       for (const r of raw.artistMonth) {
-        if (!r.m.startsWith(prefix)) continue;
+        if (!period.months.has(r.m)) continue;
         map.set(r.a, (map.get(r.a) || 0) + r.h);
       }
-      return { year, data: computeCountryData(map) };
+      return { label: period.label, data: computeCountryData(map) };
     });
-  }, [raw.artistMonth, raw.artistMeta, filtered.isComparing, filtered.comparisonYears]);
+  }, [raw.artistMonth, raw.artistMeta, filtered.isComparing, filtered.comparisonPeriods]);
 
   // --- Normal mode ---
   const data = useMemo(() => {
@@ -84,19 +83,19 @@ export default function CountryChart() {
           País de origen — comparación
         </h2>
         <div className="flex gap-4 overflow-x-auto">
-          {comparisonData.map((yData, yi) => {
-            const total = yData.data.reduce((s, d) => s + d.hours, 0);
+          {comparisonData.map((pData, pi) => {
+            const total = pData.data.reduce((s, d) => s + d.hours, 0);
             return (
-              <div key={yData.year} className="flex-1 min-w-[200px]">
-                <div className="text-xs font-bold mb-2 text-center" style={{ color: YEAR_COLORS[yi] }}>
-                  {yData.year}
+              <div key={pData.label} className="flex-1 min-w-[200px]">
+                <div className="text-xs font-bold mb-2 text-center" style={{ color: YEAR_COLORS[pi] }}>
+                  {pData.label}
                 </div>
                 <div className="h-[140px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
-                      <Pie data={yData.data} dataKey="hours" nameKey="name" cx="50%" cy="50%"
+                      <Pie data={pData.data} dataKey="hours" nameKey="name" cx="50%" cy="50%"
                         innerRadius={30} outerRadius={50} paddingAngle={2} strokeWidth={0}>
-                        {yData.data.map((_, i) => (
+                        {pData.data.map((_, i) => (
                           <Cell key={i} fill={COLORS[i % COLORS.length]} />
                         ))}
                       </Pie>
@@ -108,7 +107,7 @@ export default function CountryChart() {
                   </ResponsiveContainer>
                 </div>
                 <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 text-[10px] mt-1">
-                  {yData.data.slice(0, 5).map((d, i) => (
+                  {pData.data.slice(0, 5).map((d, i) => (
                     <span key={d.name} className="flex items-center gap-1">
                       <span className="w-2 h-2 rounded-full" style={{ background: COLORS[i % COLORS.length] }} />
                       <span className="text-zinc-400">{d.name}</span>

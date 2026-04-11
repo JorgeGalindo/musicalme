@@ -31,11 +31,14 @@ export type RawData = {
 
 export type TimeRange =
   | { type: "all" }
-  | { type: "years"; years: number[] }  // 1 year = filter, 2+ = compare
+  | { type: "range"; from: number; to: number }  // indices into allMonths
   | { type: "month"; month: string };
+
+export type CompareRange = { from: number; to: number } | null;
 
 type FilterState = {
   timeRange: TimeRange;
+  compareRange: CompareRange;
   selectedArtist: string | null;
   selectedGenre: string | null;
   selectedCountry: string | null;
@@ -48,9 +51,11 @@ export type SongComputed = {
   minutes: number;
 };
 
+export type ComparisonPeriod = { label: string; months: Set<string> };
+
 export type FilteredData = {
   months: Set<string>;
-  activeArtists: Set<string> | null; // null = no genre/country filter active
+  activeArtists: Set<string> | null;
   artistMonth: ArtistMonth[];
   weekdayMonth: WeekdayMonth[];
   sourceMonth: SourceMonth[];
@@ -64,7 +69,7 @@ export type FilteredData = {
   topSongs: SongComputed[];
   // Comparison mode
   isComparing: boolean;
-  comparisonYears: number[];
+  comparisonPeriods: ComparisonPeriod[];
 };
 
 type CtxValue = {
@@ -72,7 +77,7 @@ type CtxValue = {
   filters: FilterState;
   filtered: FilteredData;
   setTimeRange: (tr: TimeRange) => void;
-  toggleYear: (year: number) => void;
+  setCompareRange: (cr: CompareRange) => void;
   setSelectedArtist: (a: string | null) => void;
   setSelectedGenre: (g: string | null) => void;
   setSelectedCountry: (c: string | null) => void;
@@ -82,11 +87,21 @@ const Ctx = createContext<CtxValue | null>(null);
 
 // --- Helpers ---------------------------------------------------------
 
+const MONTH_NAMES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+
+function formatMonth(m: string): string {
+  const [y, mm] = m.split("-");
+  return `${MONTH_NAMES[parseInt(mm) - 1]} ${y}`;
+}
+
+function rangeLabel(allMonths: string[], from: number, to: number): string {
+  return `${formatMonth(allMonths[from])} – ${formatMonth(allMonths[to])}`;
+}
+
 function monthsForRange(allMonths: string[], tr: TimeRange): Set<string> {
   if (tr.type === "all") return new Set(allMonths);
-  if (tr.type === "years") {
-    const prefixes = tr.years.map(String);
-    return new Set(allMonths.filter((m) => prefixes.some((p) => m.startsWith(p))));
+  if (tr.type === "range") {
+    return new Set(allMonths.slice(tr.from, tr.to + 1));
   }
   return new Set([tr.month]);
 }
@@ -105,18 +120,35 @@ function songTotalsInMonths(song: SongRow, months: Set<string>): { plays: number
 
 function deriveFiltered(raw: RawData, filters: FilterState): FilteredData {
   const months = monthsForRange(raw.allMonths, filters.timeRange);
-  const isComparing = filters.timeRange.type === "years" && filters.timeRange.years.length >= 2;
-  const comparisonYears = isComparing ? (filters.timeRange as { years: number[] }).years : [];
+  const isComparing = filters.compareRange !== null;
+
+  // Build comparison periods
+  const comparisonPeriods: ComparisonPeriod[] = [];
+  if (isComparing && filters.compareRange) {
+    // Period 1: primary range (or all)
+    const primaryMonths = months;
+    const primaryLabel = filters.timeRange.type === "range"
+      ? rangeLabel(raw.allMonths, filters.timeRange.from, filters.timeRange.to)
+      : "todo";
+    comparisonPeriods.push({ label: primaryLabel, months: primaryMonths });
+
+    // Period 2: compare range
+    const cr = filters.compareRange;
+    const compareMonths = new Set(raw.allMonths.slice(cr.from, cr.to + 1));
+    comparisonPeriods.push({ label: rangeLabel(raw.allMonths, cr.from, cr.to), months: compareMonths });
+
+    // For filtering, use union of both periods
+    for (const m of compareMonths) months.add(m);
+  }
 
   // Artist-month filtered by time
   const amTime = raw.artistMonth.filter((r) => months.has(r.m));
 
-  // Artist-month for display (also by selected artist if applicable)
   const am = filters.selectedArtist
     ? amTime.filter((r) => r.a === filters.selectedArtist)
     : amTime;
 
-  // Build genre/country artist set early (needed for all dimensions)
+  // Build genre/country artist set
   let genreCountrySet: Set<string> | null = null;
   if (filters.selectedGenre || filters.selectedCountry) {
     const metaMap = new Map(raw.artistMeta.map((m) => [m.a, m]));
@@ -131,7 +163,6 @@ function deriveFiltered(raw: RawData, filters: FilterState): FilteredData {
     );
   }
 
-  // Other dimensions: time + artist + genre/country
   let wm = raw.weekdayMonth.filter((r) => months.has(r.m));
   let sm = raw.sourceMonth.filter((r) => months.has(r.m));
   const hm = raw.hourlyMonth.filter((r) => months.has(r.m));
@@ -144,13 +175,11 @@ function deriveFiltered(raw: RawData, filters: FilterState): FilteredData {
     sm = sm.filter((r) => genreCountrySet!.has(r.a));
   }
 
-  // Stats: use artist-filtered data when artist selected
   const statsSource = filters.selectedArtist ? am : amTime;
   const totalHours = Math.round(statsSource.reduce((s, r) => s + r.h, 0) * 10) / 10;
   const totalPlays = statsSource.reduce((s, r) => s + r.p, 0);
   const uniqueArtists = new Set(statsSource.map((r) => r.a)).size;
 
-  // Top artists from time-filtered data
   const artistMap = new Map<string, { hours: number; plays: number; songs: number }>();
   for (const r of amTime) {
     const prev = artistMap.get(r.a) || { hours: 0, plays: 0, songs: 0 };
@@ -168,7 +197,6 @@ function deriveFiltered(raw: RawData, filters: FilterState): FilteredData {
     }))
     .sort((a, b) => b.hours - a.hours);
 
-  // Filter by genre/country if selected
   if (filters.selectedGenre || filters.selectedCountry) {
     const metaMap = new Map(raw.artistMeta.map((m) => [m.a, m]));
     topArtists = topArtists.filter((a) => {
@@ -180,7 +208,6 @@ function deriveFiltered(raw: RawData, filters: FilterState): FilteredData {
     });
   }
 
-  // Songs: compute totals within the time range, optionally filtered by artist
   let songsFiltered = raw.songs;
   if (filters.selectedArtist) {
     songsFiltered = songsFiltered.filter((s) => s.a === filters.selectedArtist);
@@ -218,7 +245,7 @@ function deriveFiltered(raw: RawData, filters: FilterState): FilteredData {
     topArtists,
     topSongs,
     isComparing,
-    comparisonYears,
+    comparisonPeriods,
   };
 }
 
@@ -227,6 +254,7 @@ function deriveFiltered(raw: RawData, filters: FilterState): FilteredData {
 export function FilterProvider({ raw, children }: { raw: RawData; children: ReactNode }) {
   const [filters, setFilters] = useState<FilterState>({
     timeRange: { type: "all" },
+    compareRange: null,
     selectedArtist: null,
     selectedGenre: null,
     selectedCountry: null,
@@ -237,26 +265,8 @@ export function FilterProvider({ raw, children }: { raw: RawData; children: Reac
   const setTimeRange = (tr: TimeRange) =>
     setFilters((prev) => ({ ...prev, timeRange: tr }));
 
-  const toggleYear = (year: number) =>
-    setFilters((prev) => {
-      const current = prev.timeRange;
-
-      // If coming from "all" or "month", start fresh with this year
-      if (current.type !== "years") {
-        return { ...prev, timeRange: { type: "years", years: [year] } };
-      }
-
-      const years = current.years.includes(year)
-        ? current.years.filter((y) => y !== year)
-        : [...current.years, year].sort();
-
-      // If no years left, go back to "all"
-      if (years.length === 0) {
-        return { ...prev, timeRange: { type: "all" } };
-      }
-
-      return { ...prev, timeRange: { type: "years", years } };
-    });
+  const setCompareRange = (cr: CompareRange) =>
+    setFilters((prev) => ({ ...prev, compareRange: cr }));
 
   const setSelectedArtist = (a: string | null) =>
     setFilters((prev) => ({
@@ -277,7 +287,7 @@ export function FilterProvider({ raw, children }: { raw: RawData; children: Reac
     }));
 
   return (
-    <Ctx.Provider value={{ raw, filters, filtered, setTimeRange, toggleYear, setSelectedArtist, setSelectedGenre, setSelectedCountry }}>
+    <Ctx.Provider value={{ raw, filters, filtered, setTimeRange, setCompareRange, setSelectedArtist, setSelectedGenre, setSelectedCountry }}>
       {children}
     </Ctx.Provider>
   );
