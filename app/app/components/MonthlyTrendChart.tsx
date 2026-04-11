@@ -23,32 +23,41 @@ const YEAR_COLORS = [
 export default function MonthlyTrendChart() {
   const { raw, filtered, setTimeRange } = useFilter();
 
-  // --- Comparison mode: one line per period, indexed x-axis ---
+  // --- Comparison mode: Jan-Dec averaged across years in each period ---
   const comparisonData = useMemo(() => {
     if (!filtered.isComparing) return null;
 
     const periods = filtered.comparisonPeriods;
+    const MONTH_LABELS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 
-    // For each period, sum hours per month, then sort chronologically and index
-    const periodSeries = periods.map((period) => {
-      const byMonth = new Map<string, number>();
+    // For each period: group hours by month-of-year (01-12), then average across years
+    const periodMonthly = periods.map((period) => {
+      const byMM = new Map<string, number>();    // "01" → total hours
+      const yearsByMM = new Map<string, Set<string>>(); // "01" → set of years seen
       for (const r of raw.artistMonth) {
         if (!period.months.has(r.m)) continue;
-        byMonth.set(r.m, (byMonth.get(r.m) || 0) + r.h);
+        const mm = r.m.slice(5);  // "01".."12"
+        byMM.set(mm, (byMM.get(mm) || 0) + r.h);
+        if (!yearsByMM.has(mm)) yearsByMM.set(mm, new Set());
+        yearsByMM.get(mm)!.add(r.m.slice(0, 4));
       }
-      return [...byMonth.entries()]
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([, h]) => Math.round(h * 10) / 10);
+      // Average: total hours / number of years that had data for that month
+      const avg = new Map<string, number>();
+      for (const [mm, total] of byMM) {
+        const nYears = yearsByMM.get(mm)?.size || 1;
+        avg.set(mm, Math.round((total / nYears) * 10) / 10);
+      }
+      return avg;
     });
 
-    const maxLen = Math.max(...periodSeries.map((s) => s.length));
-    return Array.from({ length: maxLen }, (_, i) => {
+    return Array.from({ length: 12 }, (_, i) => {
+      const mm = String(i + 1).padStart(2, "0");
       const point: Record<string, string | number> = {
-        index: i + 1,
-        label: `Mes ${i + 1}`,
+        month: i + 1,
+        label: MONTH_LABELS[i],
       };
       periods.forEach((p, pi) => {
-        point[p.label] = periodSeries[pi][i] ?? 0;
+        point[p.label] = periodMonthly[pi].get(mm) ?? 0;
       });
       return point;
     });
