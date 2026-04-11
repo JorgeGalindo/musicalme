@@ -271,26 +271,66 @@ GENRE_OVERRIDES: dict[str, list[str]] = {
     "Kanye West": ["hip hop", "rap", "experimental hip hop"],
 }
 
-def make_artist_genres(enriched_path: Path) -> list[dict]:
-    """Load MusicBrainz enrichment and output artist → genres mapping.
+def make_artist_genres(enriched_path: Path, discogs_path: Path) -> list[dict]:
+    """Load MusicBrainz enrichment + Discogs styles → artist genres mapping.
+
+    Strategy: MusicBrainz as base, Discogs to fill gaps and add specificity.
+    - Artists with MB genres: keep MB tags, append up to 2 Discogs styles
+    - Artists without MB genres: use top 3 Discogs styles
+    - Artists only in Discogs: add with their styles
 
     Returns: [{a: artist, g: [genres], country: "XX", type: "Group|Person"}]
-    Only includes artists with at least one genre tag.
     """
+    # Load Discogs styles lookup
+    discogs_map: dict[str, list[str]] = {}
+    if discogs_path.exists():
+        for entry in json.loads(discogs_path.read_text()):
+            styles = entry.get("styles", [])
+            if styles:
+                discogs_map[entry["artist"]] = styles
+        print(f"  Discogs: {len(discogs_map)} artists with styles")
+
     if not enriched_path.exists():
-        print("  No enrichment file found, skipping genres")
-        return []
+        print("  No MusicBrainz enrichment file found")
+        # Fall back to Discogs only
+        result = []
+        for artist, styles in discogs_map.items():
+            result.append({"a": artist, "g": styles[:3]})
+        return result
 
     enriched = json.loads(enriched_path.read_text())
+    seen = set()
     result = []
+    mb_filled = 0
+    dg_filled = 0
+    dg_extended = 0
+
     for entry in enriched:
         artist = entry["artist"]
+        seen.add(artist)
 
         # Use override if available
         if artist in GENRE_OVERRIDES:
             tags = GENRE_OVERRIDES[artist]
         else:
             tags = [t for t in entry.get("tags", []) if t.lower() not in NON_GENRE_TAGS][:3]
+
+        # Complement with Discogs
+        dg_styles = discogs_map.get(artist, [])
+        if not tags and dg_styles:
+            # No MB genres → use Discogs
+            tags = [s.lower() for s in dg_styles[:3]]
+            dg_filled += 1
+        elif tags and dg_styles:
+            # Has MB genres → add up to 2 distinct Discogs styles
+            existing = {t.lower() for t in tags}
+            extras = [s.lower() for s in dg_styles if s.lower() not in existing][:2]
+            if extras:
+                tags = tags + extras
+                dg_extended += 1
+            mb_filled += 1
+        else:
+            mb_filled += 1
 
         item = {
             "a": artist,
@@ -301,6 +341,15 @@ def make_artist_genres(enriched_path: Path) -> list[dict]:
         }
         if tags or item["country"] or item["begin"]:
             result.append(item)
+
+    # Add Discogs-only artists (not in MusicBrainz)
+    dg_only = 0
+    for artist, styles in discogs_map.items():
+        if artist not in seen:
+            result.append({"a": artist, "g": [s.lower() for s in styles[:3]]})
+            dg_only += 1
+
+    print(f"  Genres: {mb_filled} MB-only, {dg_filled} Discogs-filled, {dg_extended} MB+Discogs, {dg_only} Discogs-only")
     return result
 
 
@@ -500,7 +549,7 @@ def main():
         "source-month.json": make_source_month(df),
         "hourly-month.json": make_hourly_month(df),
         "loops.json": make_loops(df),
-        "artist-genres.json": make_artist_genres(DATA_DIR / "artists-enriched.json"),
+        "artist-genres.json": make_artist_genres(DATA_DIR / "artists-enriched.json", DATA_DIR / "artists-discogs.json"),
         "resurface.json": make_resurface(df),
     }
 
