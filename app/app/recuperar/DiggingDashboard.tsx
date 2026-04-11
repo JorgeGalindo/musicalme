@@ -180,11 +180,11 @@ export default function DiggingDashboard() {
       }
     }
 
-    songRes.sort((a, b) => b.totalPlays - a.totalPlays);
+    songRes.sort((a, b) => b.lastPlayed.localeCompare(a.lastPlayed));
 
     return {
       artists: artistResults.slice(0, 50),
-      songResults: songRes.slice(0, 80),
+      songResults: songRes.slice(0, 100),
     };
   }, [artistMonth, songs, allMonths, dataMonths, fromIdx, toIdx]);
 
@@ -221,21 +221,21 @@ export default function DiggingDashboard() {
         {artists.length} artistas · {songResults.length} canciones olvidadas en este rango
       </div>
 
-      {artists.length > 0 && (
-        <section className="mb-10">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-400 mb-5">
-            Artistas olvidados
-          </h2>
-          <ResurfaceArtists artists={artists} />
-        </section>
-      )}
-
       {songResults.length > 0 && (
         <section className="mb-10">
           <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-400 mb-5">
             Canciones olvidadas
           </h2>
           <ResurfaceSongs songs={songResults} />
+        </section>
+      )}
+
+      {artists.length > 0 && (
+        <section className="mb-10">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-400 mb-5">
+            Artistas olvidados
+          </h2>
+          <ResurfaceArtists artists={artists} />
         </section>
       )}
 

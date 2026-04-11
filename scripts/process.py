@@ -358,16 +358,20 @@ def make_artist_genres(enriched_path: Path, discogs_path: Path) -> list[dict]:
 # ---------------------------------------------------------------------------
 
 def make_loops(df: pd.DataFrame) -> list[dict]:
-    """Songs played more than once on a single day.
+    """Songs played 3+ times in a listening day (6am–6am window).
 
-    For Apple Music: Play Count > 1 already indicates repeats.
-    For Spotify: each row is one play, so group by artist+song+day and count.
+    Plays between midnight and 5:59 are assigned to the previous day,
+    so a "listening day" runs from 6:00 to 5:59 next morning (~18h active window).
 
     Returns list of {a, s, d (date YYYY-MM-DD), m (month), p (play count)}.
     Sorted by play count descending.
     """
     loops_df = df[df["song"].notna()].copy()
+
+    # Shift plays before 6am to previous day
+    hour = loops_df["date"].dt.hour
     loops_df["day"] = loops_df["date"].dt.date
+    loops_df.loc[hour < 6, "day"] = (loops_df.loc[hour < 6, "date"] - pd.Timedelta(days=1)).dt.date
 
     # Group by artist + song + day, sum play counts
     result = (
@@ -376,8 +380,8 @@ def make_loops(df: pd.DataFrame) -> list[dict]:
         .reset_index()
     )
 
-    # Keep only days with >1 play
-    result = result[result["p"] > 1].copy()
+    # Keep only days with 3+ plays (real loops, not just 2 listens)
+    result = result[result["p"] >= 3].copy()
 
     result["d"] = pd.to_datetime(result["day"]).dt.strftime("%Y-%m-%d")
     result = result.rename(columns={"artist": "a", "song": "s", "month": "m"})
