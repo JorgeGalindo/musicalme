@@ -1,6 +1,8 @@
 # musicalme
 
-Personal music analytics and recommendation system. 16 years of listening history (Spotify 2009–2021 + Apple Music 2021–2025), cross-referenced with review scores and artist metadata from multiple sources.
+Personal music analytics and playlists from my own listening history. 16 years of plays (Spotify 2009–2022 + Apple Music since 2021), cross-referenced with review scores and artist metadata.
+
+Since November 2026 there is no recommendation engine any more. Instead, every quarter the Mac mini asks Apple for a fresh copy of my Apple Music history, updates everything and rebuilds two playlists straight into my Apple Music library. See «Quarterly update» below.
 
 ## What it does
 
@@ -31,24 +33,14 @@ Interactive dashboard visualising consumption patterns across 226k plays.
 
 Resurface forgotten music. Dual month-range slider from 2008 to present. Shows **forgotten songs first** (sorted by most recent last-played, top 100), then forgotten artists with significant listening in the selected period but near-zero recent activity, plus their top songs from that era.
 
-### Descubrir (`/descubrir`)
+### Playlists (`/playlists`)
 
-Multi-dimensional recommendation engine. Five affinity dimensions:
+Two playlists built only from what I've listened to (`scripts/playlists.py`):
 
-1. **Similitud directa** (d1) — Last.fm similar artists, weighted by how much you listen to the source artist
-2. **2º grado** (d2) — Similar artists of your similar artists (dampened signal)
-3. **Influencias** (d3) — Wikidata influence chains: artists who influenced what you love, or were influenced by it
-4. **Afinidad de género** (d4) — Genre profile overlap between the candidate and your listening habits
-5. **Valoración en reviews** (d5) — Pitchfork/NME/RA review scores (normalised 0–1)
+- **Olvidadas**: 50 songs with at least 10 plays that I haven't played for two years or more, most played first, at most two per artist. Each edition skips the songs of the two previous ones, so it changes every quarter.
+- **Nuevas**: 50 songs first played in the last three months of data, most played first, at most three per artist.
 
-Five preset modes that reweight the dimensions:
-- **mix**: balanced across all five
-- **familiar**: heavy on direct similarity
-- **explorar**: heavy on 2nd degree + genre affinity
-- **sorprender**: heavy on influence chains
-- **critica**: heavy on review scores — the best-reviewed artists
-
-Each recommendation shows its **top-rated albums** with scores. Filterable by: genre tags (AND/OR), seed artists (AND/OR), excluded sources, excluded recommendations, familiarity level (never / 1–4 plays / 5–20 plays), minimum affinity score. Each result shows a mini dimensional breakdown bar.
+The page lists both, with a link per song to Apple Music and a link to the real playlist once `apple_music_sync.py` has copied it into my library («musicalme · Olvidadas», «musicalme · Nuevas»; they sync to the iPhone through iCloud).
 
 ## Architecture
 
@@ -76,6 +68,11 @@ musicalme/
 ├── scripts/
 │   ├── process.py                     # Main pipeline: Apple+Spotify → dashboard JSONs
 │   ├── update.py                      # Master orchestrator: runs full pipeline in order
+│   ├── playlists.py                   # Olvidadas + Nuevas → playlists.json
+│   ├── apple_export.py                # privacy.apple.com: request, download, import (Chrome)
+│   ├── apple_music_sync.py            # playlists.json → Apple Music library (Chrome)
+│   ├── trimestral.py                  # quarterly orchestrator run by launchd
+│   ├── automation.py                  # `claude -p --chrome` + notifications
 │   ├── scrape_pitchfork.py            # Pitchfork review scraper
 │   ├── scrape_nme.py                  # NME review scraper
 │   ├── scrape_ra.py                   # Resident Advisor GraphQL scraper
@@ -84,17 +81,16 @@ musicalme/
 │   ├── match_reviews.py               # Match reviews ↔ listening history
 │   ├── enrich_musicbrainz.py          # MusicBrainz artist metadata
 │   ├── enrich_lastfm.py               # Last.fm tags + similar artists (1st degree)
-│   ├── expand_lastfm.py               # Expand Last.fm graph to 2nd + 3rd degree
 │   ├── enrich_wikidata.py             # Wikidata genres + influences
 │   ├── enrich_discogs.py              # Discogs genres/styles per release
 │   └── requirements.txt
 ├── app/                               # Next.js microsite
 │   ├── app/
-│   │   ├── layout.tsx                 # Global layout + nav (análisis | recuperar | descubrir)
+│   │   ├── layout.tsx                 # Global layout + nav (análisis | recuperar | playlists)
 │   │   ├── page.tsx                   # Analytics dashboard
 │   │   ├── recuperar/                 # Resurface forgotten music
 │   │   │   └── page.tsx
-│   │   └── descubrir/                 # Multi-dimensional recommendations
+│   │   └── playlists/                 # Olvidadas + Nuevas
 │   │       └── page.tsx
 │   └── public/data/                   # Generated JSONs (gitignored)
 │       ├── artist-month.json          # Core: artist × month → hours, plays, songs
@@ -108,7 +104,7 @@ musicalme/
 │       ├── artist-similar.json         # Last.fm similar artists (lightweight)
 │       ├── artist-scores.json         # Review scores per artist+album (by source: P/N/R)
 │       ├── resurface.json             # Precomputed forgotten artists/songs
-│       └── discover.json              # Multi-dimensional recommendation scores
+│       └── playlists.json             # The two playlists (+ Apple Music URL once synced)
 ├── .env                               # API keys (gitignored)
 ├── .env.example
 ├── .gitignore
@@ -130,7 +126,6 @@ python scripts/process.py
 # Artist enrichment (all incremental — only process new artists)
 python scripts/enrich_musicbrainz.py   # ~2h for 14k artists (1 req/s)
 python scripts/enrich_lastfm.py        # ~1h for 14k artists (4 req/s)
-python scripts/expand_lastfm.py        # ~40min, expands similar graph to 2nd+3rd degree
 python scripts/enrich_wikidata.py      # ~2h for 14k artists (2 req/s)
 python scripts/enrich_discogs.py       # ~12h for 14k artists (1 req/s)
 
@@ -177,7 +172,7 @@ Combined: **226k plays, 14.3k unique artists, 2009–2025.**
 
 **MusicBrainz** (`enrich_musicbrainz.py`) — Free API, no auth. Tags/genres, country, type (group/person), active period. Search + alias fallback for name variants (e.g. "Kanye West" → "Ye"). Feeds `artist-genres.json` for the dashboard.
 
-**Last.fm** (`enrich_lastfm.py` + `expand_lastfm.py`) — API with free key (stored in `.env`). Top tags, **similar artists** (key for recommendations), listener count, playcount. 94% coverage of listened artists. `expand_lastfm.py` extends the similarity graph to 2nd and 3rd degree connections — fetches similar data for artists referenced as "similar" but not in the listening history. Two passes for 2nd + 3rd degree. Currently ~76k total artists in the graph.
+**Last.fm** (`enrich_lastfm.py`) — API with free key (stored in `.env`). Top tags, similar artists (shown in the artist panel), listener count, playcount. 94% coverage of listened artists.
 
 **Wikidata** (`enrich_wikidata.py`) — SPARQL queries, no auth. Genres, **musical influences** (who influenced whom). EntitySearch for robust name matching. Unique source of influence chain data.
 
@@ -195,6 +190,26 @@ Combined: **226k plays, 14.3k unique artists, 2009–2025.**
 
 **Unified:** `merge_reviews.py` merges all sources, normalises to 0–10. ~42.6k reviews. `match_reviews.py` links to listening history (66% of hours matched, avg score 7.4).
 
+## Quarterly update
+
+`scripts/trimestral.py` runs every Monday at 10:00 on the Mac mini (`ops/com.jorge.musicalme-trimestral.plist`) and only does the step that's due:
+
+1. Ninety days after the last cycle it asks privacy.apple.com for a copy of «Apple Media Services information».
+2. Every following Monday it checks whether Apple has it ready (it takes up to a week). When it is, it downloads it, unpacks it into `data/apple-exports/<date>/` (nested zips included, nothing executed) and copies the daily-tracks CSV to `data/`.
+3. It rebuilds the dashboard with `process.py` (only if the raw Spotify history is in `data/spotify/`; without it `process.py` refuses to write, so 2009–2022 can't be wiped), makes the playlists, copies them into Apple Music and pushes `app/public/data` (Vercel deploys on push).
+
+Steps 1, 2 and the Apple Music copy drive Chrome with `claude -p --chrome`: my Claude subscription and the Claude in Chrome extension, no API key. Chrome must be open on the mini with the extension connected and my Apple ID signed in at music.apple.com and privacy.apple.com. If Apple asks to sign in again, or anything fails, I get a notification on the Mac and an email. State lives in `data/estado-trimestral.json`; `python scripts/trimestral.py --now` starts a cycle by hand.
+
+Setup on the mini:
+
+```bash
+python3 -m venv .venv && .venv/bin/pip install -r scripts/requirements.txt
+cp ops/com.jorge.musicalme-trimestral.plist ~/Library/LaunchAgents/
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.jorge.musicalme-trimestral.plist
+```
+
+`data/` (raw Spotify history, enrichment caches, reviews) is not in git; the originals are on the MacBook Air.
+
 ## Update workflow
 
 Three triggers for updates:
@@ -203,7 +218,7 @@ Three triggers for updates:
 
 2. **New reviews** — run scrapers for current year (`--year 2026`), then `merge_reviews.py` + `match_reviews.py`. Incremental — only fetches new URLs.
 
-3. **New artists from listening** — run enrichment scripts (all incremental, skip already-processed). Then `expand_lastfm.py` for new similarity links. Regenerate `discover.json`.
+3. **New artists from listening** — run enrichment scripts (all incremental, skip already-processed).
 
 `scripts/update.py` orchestrates all of the above in the correct order.
 
@@ -220,4 +235,4 @@ Three triggers for updates:
 - Spotify plays <30s filtered as skips
 - Spotify + Apple Music overlap 2021-2022 (both sources active, both counted)
 - Hourly data: Apple Music hours can be multi-value strings ("14, 18"), split client-side
-- Last.fm similar artists limited to ~10 per artist; `expand_lastfm.py` extends to 2nd/3rd degree (~76k total artists in graph)
+- Last.fm similar artists limited to ~10 per artist (the 2nd/3rd-degree expansion went with the recommendation engine)

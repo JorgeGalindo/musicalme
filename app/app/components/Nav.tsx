@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 const SECTIONS = [
   { href: "/", label: "análisis" },
   { href: "/recuperar", label: "recuperar" },
-  { href: "/descubrir", label: "descubrir" },
+  { href: "/playlists", label: "playlists" },
 ];
 
 export default function Nav() {

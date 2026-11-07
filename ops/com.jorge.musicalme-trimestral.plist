@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Quarterly Apple Music export → dashboard → playlists. Runs every Monday at
+     10:00; scripts/trimestral.py decides whether anything is due. Needs Chrome
+     open on the mini with Claude in Chrome connected and Apple ID signed in.
+     Install:
+       cp ops/com.jorge.musicalme-trimestral.plist ~/Library/LaunchAgents/
+       launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.jorge.musicalme-trimestral.plist -->
+<plist version="1.0">
+<dict>
+	<key>Label</key><string>com.jorge.musicalme-trimestral</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/jorge/repos/musicalme/.venv/bin/python</string>
+		<string>/Users/jorge/repos/musicalme/scripts/trimestral.py</string>
+	</array>
+	<key>WorkingDirectory</key><string>/Users/jorge/repos/musicalme</string>
+	<key>StartCalendarInterval</key>
+	<dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>10</integer><key>Minute</key><integer>0</integer></dict>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>PATH</key><string>/Users/jorge/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+	</dict>
+	<key>StandardOutPath</key><string>/Users/jorge/Library/Logs/musicalme-trimestral.log</string>
+	<key>StandardErrorPath</key><string>/Users/jorge/Library/Logs/musicalme-trimestral.log</string>
+</dict>
+</plist>

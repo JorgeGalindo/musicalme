@@ -1,0 +1,780 @@
+{
+ "generated_at": "2026-11-07T11:46:24+00:00",
+ "data_through": "2025-05",
+ "playlists": [
+  {
+   "id": "olvidadas",
+   "name": "musicalme · Olvidadas",
+   "description": "Canciones que escuchaste mucho y llevas dos años o más sin poner.",
+   "tracks": [
+    {
+     "artist": "Exlovers",
+     "song": "You Forget So Easily",
+     "plays": 164,
+     "first_month": "2013-01",
+     "last_month": "2018-12"
+    },
+    {
+     "artist": "The Postal Service",
+     "song": "Such Great Heights",
+     "plays": 111,
+     "first_month": "2010-04",
+     "last_month": "2022-08"
+    },
+    {
+     "artist": "Meursault",
+     "song": "Untitled",
+     "plays": 98,
+     "first_month": "2012-09",
+     "last_month": "2023-03"
+    },
+    {
+     "artist": "Nouvelle Vague",
+     "song": "Dance With Me",
+     "plays": 98,
+     "first_month": "2012-03",
+     "last_month": "2020-09"
+    },
+    {
+     "artist": "The Tallest Man On Earth",
+     "song": "Burden of Tomorrow",
+     "plays": 93,
+     "first_month": "2010-10",
+     "last_month": "2018-02"
+    },
+    {
+     "artist": "Jamie xx",
+     "song": "Loud Places",
+     "plays": 92,
+     "first_month": "2015-03",
+     "last_month": "2021-09"
+    },
+    {
+     "artist": "Eels",
+     "song": "Not Ready Yet",
+     "plays": 89,
+     "first_month": "2012-01",
+     "last_month": "2023-03"
+    },
+    {
+     "artist": "The Tallest Man On Earth",
+     "song": "The Dreamer",
+     "plays": 89,
+     "first_month": "2010-12",
+     "last_month": "2022-11"
+    },
+    {
+     "artist": "The Cinematic Orchestra",
+     "song": "To Build A Home",
+     "plays": 86,
+     "first_month": "2012-02",
+     "last_month": "2021-09"
+    },
+    {
+     "artist": "Major Lazer",
+     "song": "Lean On (feat. MØ & DJ Snake)",
+     "plays": 84,
+     "first_month": "2015-06",
+     "last_month": "2021-08"
+    },
+    {
+     "artist": "Creedence Clearwater Revival",
+     "song": "Have You Ever Seen The Rain",
+     "plays": 83,
+     "first_month": "2011-12",
+     "last_month": "2021-06"
+    },
+    {
+     "artist": "Meursault",
+     "song": "Settling",
+     "plays": 82,
+     "first_month": "2012-09",
+     "last_month": "2020-11"
+    },
+    {
+     "artist": "The Kinks",
+     "song": "This Time Tomorrow",
+     "plays": 82,
+     "first_month": "2011-04",
+     "last_month": "2023-04"
+    },
+    {
+     "artist": "Asaf Avidan & the Mojos",
+     "song": "One Day / Reckoning Song (Wankelmut Remix) [Radio Edit]",
+     "plays": 81,
+     "first_month": "2012-07",
+     "last_month": "2018-02"
+    },
+    {
+     "artist": "Chamberlin",
+     "song": "Giving Up the Gun",
+     "plays": 80,
+     "first_month": "2012-05",
+     "last_month": "2017-03"
+    },
+    {
+     "artist": "Florence + The Machine",
+     "song": "Dog Days Are Over",
+     "plays": 80,
+     "first_month": "2011-10",
+     "last_month": "2021-08"
+    },
+    {
+     "artist": "Babasonicos",
+     "song": "Fizz",
+     "plays": 79,
+     "first_month": "2012-01",
+     "last_month": "2022-02"
+    },
+    {
+     "artist": "Babasonicos",
+     "song": "Carismático",
+     "plays": 78,
+     "first_month": "2012-01",
+     "last_month": "2022-01"
+    },
+    {
+     "artist": "Love",
+     "song": "Maybe The People Would Be The Times Or Between Clark And Hilldale",
+     "plays": 78,
+     "first_month": "2013-02",
+     "last_month": "2015-09"
+    },
+    {
+     "artist": "Major Lazer",
+     "song": "Get Free",
+     "plays": 77,
+     "first_month": "2012-07",
+     "last_month": "2021-10"
+    },
+    {
+     "artist": "Mando Diao",
+     "song": "Mean Street - MTV Unplugged",
+     "plays": 77,
+     "first_month": "2011-01",
+     "last_month": "2021-10"
+    },
+    {
+     "artist": "Vetusta Morla",
+     "song": "Boca en la tierra",
+     "plays": 77,
+     "first_month": "2011-06",
+     "last_month": "2012-12"
+    },
+    {
+     "artist": "Kanye West",
+     "song": "Lost In The World",
+     "plays": 75,
+     "first_month": "2011-02",
+     "last_month": "2022-01"
+    },
+    {
+     "artist": "The Middle East",
+     "song": "Jesus Came To My Birthday Party",
+     "plays": 75,
+     "first_month": "2012-02",
+     "last_month": "2019-06"
+    },
+    {
+     "artist": "Vetusta Morla",
+     "song": "Maldita dulzura",
+     "plays": 75,
+     "first_month": "2011-06",
+     "last_month": "2012-12"
+    },
+    {
+     "artist": "The Killers",
+     "song": "Read My Mind",
+     "plays": 74,
+     "first_month": "2010-09",
+     "last_month": "2022-12"
+    },
+    {
+     "artist": "Modest Mouse",
+     "song": "The World At Large",
+     "plays": 70,
+     "first_month": "2010-10",
+     "last_month": "2023-01"
+    },
+    {
+     "artist": "T. Rex",
+     "song": "Cosmic Dancer - Single-Vocal Mix",
+     "plays": 70,
+     "first_month": "2013-03",
+     "last_month": "2018-10"
+    },
+    {
+     "artist": "Los Planetas",
+     "song": "Un Buen Dia",
+     "plays": 69,
+     "first_month": "2011-02",
+     "last_month": "2021-04"
+    },
+    {
+     "artist": "Eels",
+     "song": "Beginner's Luck",
+     "plays": 68,
+     "first_month": "2011-01",
+     "last_month": "2021-06"
+    },
+    {
+     "artist": "The Shins",
+     "song": "Caring Is Creepy",
+     "plays": 68,
+     "first_month": "2011-11",
+     "last_month": "2022-08"
+    },
+    {
+     "artist": "The Cinematic Orchestra",
+     "song": "Breathe",
+     "plays": 67,
+     "first_month": "2012-03",
+     "last_month": "2021-09"
+    },
+    {
+     "artist": "Whitney",
+     "song": "Golden Days",
+     "plays": 67,
+     "first_month": "2016-10",
+     "last_month": "2022-07"
+    },
+    {
+     "artist": "Drake",
+     "song": "Hold On, We're Going Home",
+     "plays": 66,
+     "first_month": "2013-12",
+     "last_month": "2022-01"
+    },
+    {
+     "artist": "High Highs",
+     "song": "Flowers Bloom",
+     "plays": 66,
+     "first_month": "2012-08",
+     "last_month": "2015-02"
+    },
+    {
+     "artist": "Clint Is Gone",
+     "song": "A Song to Singalong",
+     "plays": 65,
+     "first_month": "2012-02",
+     "last_month": "2021-05"
+    },
+    {
+     "artist": "The War On Drugs",
+     "song": "Red Eyes",
+     "plays": 65,
+     "first_month": "2015-09",
+     "last_month": "2022-01"
+    },
+    {
+     "artist": "LCD Soundsystem",
+     "song": "New York, I Love You but You're Bringing Me Down",
+     "plays": 64,
+     "first_month": "2012-11",
+     "last_month": "2021-03"
+    },
+    {
+     "artist": "Love of Lesbian",
+     "song": "Club de fans de John Boy",
+     "plays": 64,
+     "first_month": "2010-05",
+     "last_month": "2021-04"
+    },
+    {
+     "artist": "Beirut",
+     "song": "Vagabond",
+     "plays": 63,
+     "first_month": "2011-10",
+     "last_month": "2019-03"
+    },
+    {
+     "artist": "Bon Iver",
+     "song": "re:stacks",
+     "plays": 63,
+     "first_month": "2010-09",
+     "last_month": "2019-03"
+    },
+    {
+     "artist": "Death Cab for Cutie",
+     "song": "I Will Follow You into the Dark",
+     "plays": 63,
+     "first_month": "2010-10",
+     "last_month": "2020-05"
+    },
+    {
+     "artist": "Rosalía",
+     "song": "DI MI NOMBRE - Cap.8: Éxtasis",
+     "plays": 63,
+     "first_month": "2018-11",
+     "last_month": "2022-02"
+    },
+    {
+     "artist": "Scissor Sisters",
+     "song": "Laura",
+     "plays": 63,
+     "first_month": "2012-10",
+     "last_month": "2021-10"
+    },
+    {
+     "artist": "Quique González",
+     "song": "Salitre",
+     "plays": 62,
+     "first_month": "2011-09",
+     "last_month": "2021-04"
+    },
+    {
+     "artist": "The Libertines",
+     "song": "Last Post on the Bugle",
+     "plays": 62,
+     "first_month": "2011-10",
+     "last_month": "2021-09"
+    },
+    {
+     "artist": "Lanterns on the Lake",
+     "song": "Blanket Of Leaves",
+     "plays": 61,
+     "first_month": "2012-06",
+     "last_month": "2021-07"
+    },
+    {
+     "artist": "Love",
+     "song": "Alone Again Or",
+     "plays": 61,
+     "first_month": "2012-02",
+     "last_month": "2016-04"
+    },
+    {
+     "artist": "Lanterns on the Lake",
+     "song": "Keep On Trying",
+     "plays": 60,
+     "first_month": "2012-06",
+     "last_month": "2021-09"
+    },
+    {
+     "artist": "Miles Davis",
+     "song": "'Round Midnight (feat. John Coltrane, Red Garland, Paul Chambers & Philly Joe Jones)",
+     "plays": 60,
+     "first_month": "2013-07",
+     "last_month": "2020-11"
+    }
+   ],
+   "apple_url": null,
+   "synced_at": null
+  },
+  {
+   "id": "nuevas",
+   "name": "musicalme · Nuevas",
+   "description": "Lo que empezaste a escuchar en los últimos tres meses.",
+   "tracks": [
+    {
+     "artist": "Bon Iver",
+     "song": "Walk Home",
+     "plays": 11,
+     "first_month": "2025-04",
+     "last_month": "2025-05"
+    },
+    {
+     "artist": "Bon Iver",
+     "song": "Day One (feat. Dijon & Flock of Dimes)",
+     "plays": 9,
+     "first_month": "2025-04",
+     "last_month": "2025-05"
+    },
+    {
+     "artist": "Bon Iver",
+     "song": "Short Story",
+     "plays": 8,
+     "first_month": "2025-04",
+     "last_month": "2025-05"
+    },
+    {
+     "artist": "Repion & Tulsa",
+     "song": "Vienen De Pasárselo Bien Con Tulsa",
+     "plays": 7,
+     "first_month": "2025-03",
+     "last_month": "2025-05"
+    },
+    {
+     "artist": "Oklou",
+     "song": "endless",
+     "plays": 5,
+     "first_month": "2025-03",
+     "last_month": "2025-04"
+    },
+    {
+     "artist": "Mishima",
+     "song": "HdHFMD",
+     "plays": 5,
+     "first_month": "2025-04",
+     "last_month": "2025-04"
+    },
+    {
+     "artist": "DJ Koze",
+     "song": "Buschtaxi",
+     "plays": 4,
+     "first_month": "2025-03",
+     "last_month": "2025-03"
+    },
+    {
+     "artist": "Santa Salut",
+     "song": "La Presión",
+     "plays": 4,
+     "first_month": "2025-03",
+     "last_month": "2025-03"
+    },
+    {
+     "artist": "Repion",
+     "song": "El Día No Me Da Con Shego (feat. Shego)",
+     "plays": 4,
+     "first_month": "2025-04",
+     "last_month": "2025-05"
+    },
+    {
+     "artist": "Bomba Estéreo, Rawayana & ASTROPICAL",
+     "song": "Llegó El Verano (Sagitario)",
+     "plays": 3,
+     "first_month": "2025-03",
+     "last_month": "2025-04"
+    },
+    {
+     "artist": "DJ Koze & Marley Waters",
+     "song": "Brushcutter",
+     "plays": 3,
+     "first_month": "2025-03",
+     "last_month": "2025-03"
+    },
+    {
+     "artist": "Delaossa",
+     "song": "Nueva Season",
+     "plays": 3,
+     "first_month": "2025-03",
+     "last_month": "2025-03"
+    },
+    {
+     "artist": "Oklou",
+     "song": "family and friends",
+     "plays": 3,
+     "first_month": "2025-03",
+     "last_month": "2025-03"
+    },
+    {
+     "artist": "Oklou",
+     "song": "obvious",
+     "plays": 3,
+     "first_month": "2025-03",
+     "last_month": "2025-03"
+    },
+    {
+     "artist": "Rigoberta Bandini",
+     "song": "KAIMAN",
+     "plays": 3,
+     "first_month": "2025-03",
+     "last_month": "2025-03"
+    },
+    {
+     "artist": "Repion",
+     "song": "Qué Hay De Ti? Con Cora Yako (feat. Cora Yako)",
+     "plays": 3,
+     "first_month": "2025-04",
+     "last_month": "2025-05"
+    },
+    {
+     "artist": "Tacho & Associació Musical Ciutat de Benicarló",
+     "song": "La Bachateta",
+     "plays": 3,
+     "first_month": "2025-04",
+     "last_month": "2025-04"
+    },
+    {
+     "artist": "Repion",
+     "song": "Catarsis",
+     "plays": 3,
+     "first_month": "2025-05",
+     "last_month": "2025-05"
+    },
+    {
+     "artist": "Arce & Al Safir",
+     "song": "Nékora",
+     "plays": 2,
+     "first_month": "2025-03",
+     "last_month": "2025-03"
+    },
+    {
+     "artist": "Bomba Estéreo, Rawayana & ASTROPICAL",
+     "song": "Brinca (Acuario)",
+     "plays": 2,
+     "first_month": "2025-03",
+     "last_month": "2025-04"
+    },
+    {
+     "artist": "Bomba Estéreo, Rawayana & ASTROPICAL",
+     "song": "Calentita (Aries)",
+     "plays": 2,
+     "first_month": "2025-03",
+     "last_month": "2025-04"
+    },
+    {
+     "artist": "DELLAFUENTE",
+     "song": "Sunombre_126bpm_bminor",
+     "plays": 2,
+     "first_month": "2025-03",
+     "last_month": "2025-03"
+    },
+    {
+     "artist": "DJ Koze & Ada",
+     "song": "Unbelievable",
+     "plays": 2,
+     "first_month": "2025-03",
+     "last_month": "2025-03"
+    },
+    {
+     "artist": "DJ Koze, arnim & The Düsseldorf Düsterboys",
+     "song": "Wie schön du bist",
+     "plays": 2,
+     "first_month": "2025-03",
+     "last_month": "2025-03"
+    },
+    {
+     "artist": "FERNANDOCOSTA",
+     "song": "HOY VUELVO A EMPEZAR",
+     "plays": 2,
+     "first_month": "2025-03",
+     "last_month": "2025-03"
+    },
+    {
+     "artist": "Hearts2Hearts",
+     "song": "The Chase",
+     "plays": 2,
+     "first_month": "2025-03",
+     "last_month": "2025-04"
+    },
+    {
+     "artist": "Little Simz",
+     "song": "Flood (feat. Obongjayar & Moonchild Sanelly)",
+     "plays": 2,
+     "first_month": "2025-03",
+     "last_month": "2025-03"
+    },
+    {
+     "artist": "Neska",
+     "song": "Me parte",
+     "plays": 2,
+     "first_month": "2025-03",
+     "last_month": "2025-03"
+    },
+    {
+     "artist": "Oklou & Bladee",
+     "song": "take me by the hand",
+     "plays": 2,
+     "first_month": "2025-03",
+     "last_month": "2025-03"
+    },
+    {
+     "artist": "Pulp",
+     "song": "Like a Friend",
+     "plays": 2,
+     "first_month": "2025-03",
+     "last_month": "2025-03"
+    },
+    {
+     "artist": "Rachel Chinouriri",
+     "song": "Can we talk about Isaac?",
+     "plays": 2,
+     "first_month": "2025-03",
+     "last_month": "2025-04"
+    },
+    {
+     "artist": "Cumpleaños Un Martes",
+     "song": "Himno de Moratalaz",
+     "plays": 2,
+     "first_month": "2025-04",
+     "last_month": "2025-04"
+    },
+    {
+     "artist": "Ella Baila Sola",
+     "song": "Y Quisiera",
+     "plays": 2,
+     "first_month": "2025-04",
+     "last_month": "2025-04"
+    },
+    {
+     "artist": "Julia Cry, 808 Blanco & N. Rizo",
+     "song": "LA ESCUELA",
+     "plays": 2,
+     "first_month": "2025-04",
+     "last_month": "2025-04"
+    },
+    {
+     "artist": "Los Estanques, El Canijo de Jerez & Gualberto",
+     "song": "Lacrime di piombo fuso",
+     "plays": 2,
+     "first_month": "2025-04",
+     "last_month": "2025-04"
+    },
+    {
+     "artist": "Manolo García",
+     "song": "A San Fernando un Ratito a Pie y Otro Caminando",
+     "plays": 2,
+     "first_month": "2025-04",
+     "last_month": "2025-04"
+    },
+    {
+     "artist": "Marta Sánchez",
+     "song": "Desconocida",
+     "plays": 2,
+     "first_month": "2025-04",
+     "last_month": "2025-04"
+    },
+    {
+     "artist": "Moncho Chavea & Morad",
+     "song": "SE FUE",
+     "plays": 2,
+     "first_month": "2025-04",
+     "last_month": "2025-04"
+    },
+    {
+     "artist": "Repion & Rufus T. Firefly",
+     "song": "Viernes Con Rufus T. Firefly",
+     "plays": 2,
+     "first_month": "2025-04",
+     "last_month": "2025-05"
+    },
+    {
+     "artist": "Tacho",
+     "song": "El Fallerisme",
+     "plays": 2,
+     "first_month": "2025-04",
+     "last_month": "2025-04"
+    },
+    {
+     "artist": "The Sounds",
+     "song": "Tony the Beat (Push It) [Single Version]",
+     "plays": 2,
+     "first_month": "2025-04",
+     "last_month": "2025-04"
+    },
+    {
+     "artist": "Ainda",
+     "song": "Recuerdos de Ypacaraí",
+     "plays": 2,
+     "first_month": "2025-05",
+     "last_month": "2025-05"
+    },
+    {
+     "artist": "Carolina Durante",
+     "song": "Buenos Consejos, Peores Personas",
+     "plays": 2,
+     "first_month": "2025-05",
+     "last_month": "2025-05"
+    },
+    {
+     "artist": "Carolina Durante",
+     "song": "Famoso en tres calles",
+     "plays": 2,
+     "first_month": "2025-05",
+     "last_month": "2025-05"
+    },
+    {
+     "artist": "Carolina Durante",
+     "song": "Las Canciones de Juanita",
+     "plays": 2,
+     "first_month": "2025-05",
+     "last_month": "2025-05"
+    },
+    {
+     "artist": "Daughter of Swords",
+     "song": "Strange",
+     "plays": 2,
+     "first_month": "2025-05",
+     "last_month": "2025-05"
+    },
+    {
+     "artist": "FERNANDOCOSTA & Lia Kali",
+     "song": "POR SI TE VAS",
+     "plays": 2,
+     "first_month": "2025-05",
+     "last_month": "2025-05"
+    },
+    {
+     "artist": "Kacey Musgraves",
+     "song": "Sounds from the Heart of the Woods",
+     "plays": 2,
+     "first_month": "2025-05",
+     "last_month": "2025-05"
+    },
+    {
+     "artist": "Kiasmos",
+     "song": "Looped (Mixed)",
+     "plays": 2,
+     "first_month": "2025-05",
+     "last_month": "2025-05"
+    },
+    {
+     "artist": "Nilüfer Yanya",
+     "song": "Cold Heart",
+     "plays": 2,
+     "first_month": "2025-05",
+     "last_month": "2025-05"
+    }
+   ],
+   "apple_url": null,
+   "synced_at": null
+  }
+ ],
+ "history": {
+  "olvidadas": [
+   [
+    "exlovers␟you forget so easily",
+    "the postal service␟such great heights",
+    "meursault␟untitled",
+    "nouvelle vague␟dance with me",
+    "the tallest man on earth␟burden of tomorrow",
+    "jamie xx␟loud places",
+    "eels␟not ready yet",
+    "the tallest man on earth␟the dreamer",
+    "the cinematic orchestra␟to build a home",
+    "major lazer␟lean on (feat. mø & dj snake)",
+    "creedence clearwater revival␟have you ever seen the rain",
+    "meursault␟settling",
+    "the kinks␟this time tomorrow",
+    "asaf avidan & the mojos␟one day / reckoning song (wankelmut remix) [radio edit]",
+    "chamberlin␟giving up the gun",
+    "florence + the machine␟dog days are over",
+    "babasonicos␟fizz",
+    "babasonicos␟carismático",
+    "love␟maybe the people would be the times or between clark and hilldale",
+    "major lazer␟get free",
+    "mando diao␟mean street - mtv unplugged",
+    "vetusta morla␟boca en la tierra",
+    "kanye west␟lost in the world",
+    "the middle east␟jesus came to my birthday party",
+    "vetusta morla␟maldita dulzura",
+    "the killers␟read my mind",
+    "modest mouse␟the world at large",
+    "t. rex␟cosmic dancer - single-vocal mix",
+    "los planetas␟un buen dia",
+    "eels␟beginner's luck",
+    "the shins␟caring is creepy",
+    "the cinematic orchestra␟breathe",
+    "whitney␟golden days",
+    "drake␟hold on, we're going home",
+    "high highs␟flowers bloom",
+    "clint is gone␟a song to singalong",
+    "the war on drugs␟red eyes",
+    "lcd soundsystem␟new york, i love you but you're bringing me down",
+    "love of lesbian␟club de fans de john boy",
+    "beirut␟vagabond",
+    "bon iver␟re:stacks",
+    "death cab for cutie␟i will follow you into the dark",
+    "rosalía␟di mi nombre - cap.8: éxtasis",
+    "scissor sisters␟laura",
+    "quique gonzález␟salitre",
+    "the libertines␟last post on the bugle",
+    "lanterns on the lake␟blanket of leaves",
+    "love␟alone again or",
+    "lanterns on the lake␟keep on trying",
+    "miles davis␟'round midnight (feat. john coltrane, red garland, paul chambers & philly joe jones)"
+   ]
+  ]
+ }
+}

@@ -11,6 +11,7 @@ Plus lightweight helpers: weekday-month.json, source-month.json
 
 import json
 import os
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -542,6 +543,15 @@ def make_resurface(df: pd.DataFrame, recent_months: int = 6, min_past_hours: flo
 def main():
     os.makedirs(OUT_DIR, exist_ok=True)
 
+    # Guards: the raw Spotify history (2009-2022) and the enrichment caches only
+    # live in data/ on the MacBook Air. Without Spotify, rewriting the JSONs
+    # would silently erase thirteen years from the dashboard.
+    if not DAILY_TRACKS.exists():
+        sys.exit(f"Falta {DAILY_TRACKS.name} en data/: importa un export de Apple (apple_export.py import).")
+    if not any(SPOTIFY_DIR.glob("Streaming_History_Audio_*.json")):
+        sys.exit("Falta data/spotify/Streaming_History_Audio_*.json (está en el Air). "
+                 "Sin él el panel perdería 2009-2022, así que no escribo nada.")
+
     print("Loading data...")
     df = load_all_tracks()
     print(f"  {len(df):,} rows, {df['date'].min().date()} → {df['date'].max().date()}")
@@ -553,9 +563,13 @@ def main():
         "source-month.json": make_source_month(df),
         "hourly-month.json": make_hourly_month(df),
         "loops.json": make_loops(df),
-        "artist-genres.json": make_artist_genres(DATA_DIR / "artists-enriched.json", DATA_DIR / "artists-discogs.json"),
         "resurface.json": make_resurface(df),
     }
+    if (DATA_DIR / "artists-enriched.json").exists():
+        outputs["artist-genres.json"] = make_artist_genres(DATA_DIR / "artists-enriched.json",
+                                                           DATA_DIR / "artists-discogs.json")
+    else:
+        print("  (sin data/artists-enriched.json: se conserva artist-genres.json tal cual)")
 
     for filename, data in outputs.items():
         path = OUT_DIR / filename

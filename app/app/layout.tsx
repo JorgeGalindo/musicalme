@@ -11,7 +11,7 @@ const robotoMono = Roboto_Mono({
 
 export const metadata: Metadata = {
   title: "musicalme",
-  description: "Music analytics and recommendations",
+  description: "Music analytics and playlists from my own listening history",
 };
 
 export default function RootLayout({
