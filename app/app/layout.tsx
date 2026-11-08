@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import { Roboto_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import Nav from "./components/Nav";
 
-const robotoMono = Roboto_Mono({
+// Served from the repo (Fontsource, OFL) so the build never depends on Google Fonts.
+const robotoMono = localFont({
+  src: "./fonts/roboto-mono-latin-wght-normal.woff2",
   variable: "--font-mono",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "700"],
+  weight: "100 700",
 });
 
 export const metadata: Metadata = {
