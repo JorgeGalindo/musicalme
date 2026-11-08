@@ -11,6 +11,8 @@
 	<key>Label</key><string>com.jorge.musicalme-trimestral</string>
 	<key>ProgramArguments</key>
 	<array>
+		<string>/usr/bin/caffeinate</string>
+		<string>-i</string>
 		<string>/Users/jorge/repos/musicalme/.venv/bin/python</string>
 		<string>/Users/jorge/repos/musicalme/scripts/trimestral.py</string>
 	</array>
