@@ -36,6 +36,7 @@ from automation import ROOT, avisar  # noqa: E402
 STATE = ROOT / "data" / "estado-trimestral.json"
 EVERY = timedelta(days=90)
 PYTHON = sys.executable
+RELANZAR = "cd ~/repos/musicalme && .venv/bin/python scripts/trimestral.py"
 
 
 def load_state() -> dict:
@@ -106,7 +107,7 @@ def step(state: dict, force: bool = False) -> dict:
         elif r["status"] == "login_required":
             avisar("Apple pide iniciar sesión",
                    "Para pedir la copia trimestral de tus datos, inicia sesión en privacy.apple.com "
-                   f"en el Chrome del mini. El próximo lunes lo vuelvo a intentar.\n\n{r['detail']}")
+                   f"en el Chrome del mini y lánzalo en ese momento (la sesión de Apple dura poco): {RELANZAR}\n\n{r['detail']}")
         else:
             avisar("No pude pedir tus datos a Apple", r["detail"])
         return state
@@ -125,7 +126,7 @@ def step(state: dict, force: bool = False) -> dict:
     elif r["status"] == "login_required":
         avisar("Apple pide iniciar sesión",
                "Tu copia de datos puede estar lista, pero privacy.apple.com pide iniciar sesión en el "
-               f"Chrome del mini.\n\n{r['detail']}")
+               f"Chrome del mini y lánzalo en ese momento: {RELANZAR}\n\n{r['detail']}")
     elif r["status"] == "pending":
         requested = datetime.fromisoformat(state["requested_at"])
         if now() - requested > timedelta(days=21):
